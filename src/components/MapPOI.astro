@@ -84,11 +84,13 @@ const markersByCat = pois.reduce<Record<string, POI[]>>((acc, p) => {
   return acc;
 }, {});
 
-// Logo Stay'n en marker custom — URL absolue (Google Static Maps fetche
-// l'image côté serveur, donc localhost ne marche pas en dev :
-// le marker logo s'affichera dès que le site est accessible publiquement
-// — preview Cloudflare Pages ou production stayn-stains.fr).
-const saleIconUrl = new URL('/logo-marker.png', Astro.site).toString();
+// Logo Stay'n en marker custom — Google Static Maps fetche l'image
+// côté serveur, donc l'URL doit être publiquement accessible.
+// On hardcode le hostname Cloudflare Workers (toujours accessible
+// même après bascule DNS sur stayn-stains.fr — les deux URLs cohabitent).
+const MARKER_HOST = import.meta.env.PUBLIC_MARKER_BASE_URL ||
+  'https://stayn-stains-site.jmg-2d3.workers.dev';
+const saleIconUrl = `${MARKER_HOST}/logo-marker.png`;
 
 const markerParams = Object.entries(markersByCat)
   .map(([cat, items]) => {
