@@ -1,0 +1,476 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props { lang?: Locale; }
+const { lang = DEFAULT_LOCALE } = Astro.props;
+const s = t(lang);
+
+// ============================================================
+// Coordonnées POI — à affiner avec les adresses exactes côté client.
+// Les distances/temps à pied sont indicatifs (Google Maps "à pied").
+// ============================================================
+const center = { lat: 48.9521, lng: 2.3873 }; // 7-11 av. Marcel Cachin
+
+type Cat = 'sale' | 'practical' | 'transit' | 'education' | 'worship' | 'sport';
+
+interface POI {
+  id: string;
+  cat: Cat;
+  icon: string;
+  label: string;
+  sub: string;
+  lat: number;
+  lng: number;
+  walk?: string; // "5 min"
+}
+
+const pois: POI[] = [
+  // Stay'n — point central
+  { id: 'sale', cat: 'sale', icon: 'star', label: s.localisation.poi_sale, sub: s.localisation.poi_sale_sub, lat: 48.9521, lng: 2.3873, walk: '0 min' },
+
+  // Vie pratique
+  { id: 'mairie', cat: 'practical', icon: 'building', label: s.localisation.poi_mairie, sub: s.localisation.poi_mairie_sub, lat: 48.9558, lng: 2.3854, walk: '6 min' },
+  { id: 'marche', cat: 'practical', icon: 'shop', label: s.localisation.poi_marche, sub: s.localisation.poi_marche_sub, lat: 48.9530, lng: 2.3862, walk: '4 min' },
+  { id: 'poste', cat: 'practical', icon: 'mail', label: s.localisation.poi_poste, sub: s.localisation.poi_poste_sub, lat: 48.9545, lng: 2.3868, walk: '5 min' },
+  { id: 'shops', cat: 'practical', icon: 'shopping-bag', label: s.localisation.poi_shops, sub: s.localisation.poi_shops_sub, lat: 48.9538, lng: 2.3870, walk: '4 min' },
+
+  // Transports
+  { id: 'rerd', cat: 'transit', icon: 'train', label: s.localisation.poi_rerd, sub: s.localisation.poi_rerd_sub, lat: 48.9613, lng: 2.3905, walk: '10 min' },
+  { id: 'rerb', cat: 'transit', icon: 'train', label: s.localisation.poi_rerb, sub: s.localisation.poi_rerb_sub, lat: 48.9277, lng: 2.4441, walk: '10 min · bus' },
+  { id: 'm13', cat: 'transit', icon: 'metro', label: s.localisation.poi_m13, sub: s.localisation.poi_m13_sub, lat: 48.9460, lng: 2.3631, walk: '12 min · bus' },
+  { id: 't11', cat: 'transit', icon: 'tram', label: s.localisation.poi_t11, sub: s.localisation.poi_t11_sub, lat: 48.9602, lng: 2.3878, walk: '8 min' },
+  { id: 'bus', cat: 'transit', icon: 'bus', label: s.localisation.poi_bus, sub: s.localisation.poi_bus_sub, lat: 48.9519, lng: 2.3859, walk: '1 min' },
+
+  // Éducation
+  { id: 'school-primary', cat: 'education', icon: 'school', label: s.localisation.poi_school_primary, sub: s.localisation.poi_school_primary_sub, lat: 48.9540, lng: 2.3895, walk: '5 min' },
+  { id: 'school-secondary', cat: 'education', icon: 'graduation', label: s.localisation.poi_school_secondary, sub: s.localisation.poi_school_secondary_sub, lat: 48.9560, lng: 2.3910, walk: '8 min' },
+
+  // Cultes
+  { id: 'eglise', cat: 'worship', icon: 'church', label: s.localisation.poi_eglise, sub: s.localisation.poi_eglise_sub, lat: 48.9529, lng: 2.3850, walk: '3 min' },
+  { id: 'mosquee', cat: 'worship', icon: 'mosque', label: s.localisation.poi_mosquee, sub: s.localisation.poi_mosquee_sub, lat: 48.9555, lng: 2.3895, walk: '6 min' },
+
+  // Sport
+  { id: 'sport', cat: 'sport', icon: 'sport', label: s.localisation.poi_sport, sub: s.localisation.poi_sport_sub, lat: 48.9505, lng: 2.3940, walk: '6 min' },
+];
+
+// Couleurs catégories — alignées sur la palette du site
+const CAT_COLORS: Record<Cat, string> = {
+  sale: '#812933',       // bordeaux Stay'n
+  practical: '#2C5784',  // bleu nuit
+  transit: '#6B8E23',    // olive
+  education: '#B8860B',  // doré
+  worship: '#6E5491',    // pourpre
+  sport: '#8E4585',      // magenta
+};
+
+// Construction de l'URL Google Static Maps — image fixe à charger côté client.
+// La clé doit être restreinte par HTTP referrer côté Google Cloud Console.
+const apiKey = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || '';
+const hasKey = apiKey.length > 0;
+
+function gmapsHexColor(hex: string): string {
+  return '0x' + hex.replace('#', '');
+}
+
+// Group markers by category to reduce URL length
+const markersByCat = pois.reduce<Record<string, POI[]>>((acc, p) => {
+  if (!acc[p.cat]) acc[p.cat] = [];
+  acc[p.cat].push(p);
+  return acc;
+}, {});
+
+// Logo Stay'n en marker custom — URL absolue (Google Static Maps fetche
+// l'image côté serveur, donc localhost ne marche pas en dev :
+// le marker logo s'affichera dès que le site est accessible publiquement
+// — preview Cloudflare Pages ou production stayn-stains.fr).
+const saleIconUrl = new URL('/logo-marker.png', Astro.site).toString();
+
+const markerParams = Object.entries(markersByCat)
+  .map(([cat, items]) => {
+    const points = items.map((p) => `${p.lat},${p.lng}`).join('|');
+    if (cat === 'sale') {
+      return `markers=icon:${encodeURIComponent(saleIconUrl)}|anchor:center|${points}`;
+    }
+    const color = gmapsHexColor(CAT_COLORS[cat as Cat]);
+    return `markers=color:${color}|size:mid|${points}`;
+  })
+  .join('&');
+
+const mapStyleParams = [
+  'style=feature:poi|visibility:off',
+  'style=feature:transit.station|visibility:off',
+  'style=feature:road|element:labels.icon|visibility:off',
+  'style=feature:administrative|element:labels.icon|visibility:off',
+  'style=feature:water|color:0xC7D7E2',
+  'style=feature:landscape|color:0xF5F1E8',
+  'style=feature:road|element:geometry|color:0xFFFFFF',
+  'style=feature:road|element:geometry.stroke|color:0xE5DACE',
+  'style=feature:road.highway|element:geometry|color:0xF0E2C8',
+].join('&');
+
+const mapLang = lang === 'ar' ? 'ar' : (lang === 'en' ? 'en' : 'fr');
+
+const mapUrl = hasKey
+  ? `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=15&size=760x520&scale=2&maptype=roadmap&language=${mapLang}&${markerParams}&${mapStyleParams}&key=${apiKey}`
+  : null;
+
+// Ouvre l'itinéraire piéton depuis l'espace de vente Stay'n vers le POI
+function dirUrl(p: POI): string {
+  const origin = `${center.lat},${center.lng}`;
+  const dest = `${p.lat},${p.lng}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=walking`;
+}
+
+// Sections POI (pour le rendu en grille)
+const sections: Array<{ id: Cat; title: string; items: POI[] }> = [
+  { id: 'practical', title: s.localisation.section_practical, items: pois.filter((p) => p.cat === 'practical') },
+  { id: 'transit',   title: s.localisation.section_transit,   items: pois.filter((p) => p.cat === 'transit') },
+  { id: 'education', title: s.localisation.section_education, items: pois.filter((p) => p.cat === 'education') },
+  { id: 'worship',   title: s.localisation.section_worship,   items: pois.filter((p) => p.cat === 'worship') },
+  { id: 'sport',     title: s.localisation.section_sport,     items: pois.filter((p) => p.cat === 'sport') },
+];
+
+// Légende
+const legend: Array<{ cat: Cat; label: string }> = [
+  { cat: 'sale',      label: s.localisation.legend_sale },
+  { cat: 'practical', label: s.localisation.legend_practical },
+  { cat: 'transit',   label: s.localisation.legend_transit },
+  { cat: 'education', label: s.localisation.legend_education },
+  { cat: 'worship',   label: s.localisation.legend_worship },
+  { cat: 'sport',     label: s.localisation.legend_sport },
+];
+---
+
+<div class="map-poi" data-map-poi>
+  <!-- ========== CARTE FIXE ========== -->
+  <figure class="map-figure">
+    {mapUrl ? (
+      <img
+        src={mapUrl}
+        alt={s.localisation.map_region_aria}
+        width="760"
+        height="520"
+        class="map-img"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="map-fallback" role="region" aria-label={s.localisation.map_region_aria}>
+        <iframe
+          src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
+          width="100%"
+          height="100%"
+          style="border:0; min-height: 360px;"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Stay'n"
+        ></iframe>
+      </div>
+    )}
+
+    <figcaption class="map-legend" aria-label={s.localisation.map_legend_aria}>
+      {legend.map((l) => (
+        <span class="legend-item">
+          <span class="legend-dot" style={`background:${CAT_COLORS[l.cat]}`} aria-hidden="true"></span>
+          <span>{l.label}</span>
+        </span>
+      ))}
+    </figcaption>
+  </figure>
+
+  <!-- ========== GRILLE POI ========== -->
+  <div class="poi-sections">
+    {sections.map((sec) => (
+      <section class="poi-section" aria-labelledby={`sec-${sec.id}`}>
+        <header class="poi-section-head">
+          <span class="poi-section-dot" style={`background:${CAT_COLORS[sec.id]}`} aria-hidden="true"></span>
+          <h3 class="poi-section-title" id={`sec-${sec.id}`}>{sec.title}</h3>
+        </header>
+        <ul class="poi-list">
+          {sec.items.map((p) => (
+            <li class="poi-card" style={`--cat:${CAT_COLORS[sec.id]}`}>
+              <div class="poi-icon" aria-hidden="true">
+                {p.icon === 'building' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h2M13 9h2M9 13h2M13 13h2M9 17h2M13 17h2"/></svg>
+                )}
+                {p.icon === 'shop' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18l-1.5 11a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2L3 9Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+                )}
+                {p.icon === 'shopping-bag' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                )}
+                {p.icon === 'mail' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+                )}
+                {p.icon === 'train' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/><path d="m6 22 2-3M16 19l2 3"/></svg>
+                )}
+                {p.icon === 'metro' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m7 16 5-9 5 9"/><path d="M9 12h6"/></svg>
+                )}
+                {p.icon === 'tram' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="2"/><path d="M5 11h14"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/><path d="m4 21 3-4M17 17l3 4M11 3v-1M13 3v-1"/></svg>
+                )}
+                {p.icon === 'bus' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11h-2v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2H9v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2H4Z"/><path d="M4 11h16"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+                )}
+                {p.icon === 'school' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/><path d="M9 11h6"/></svg>
+                )}
+                {p.icon === 'graduation' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5a6 3 0 0 0 12 0v-5"/><path d="M22 10v6"/></svg>
+                )}
+                {p.icon === 'church' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M9 5h6"/><path d="m12 8-7 4v9h14v-9Z"/><path d="M9 21v-5h6v5"/></svg>
+                )}
+                {p.icon === 'mosque' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a5 5 0 0 0-5 5c0 2 1 3 1 5h8c0-2 1-3 1-5a5 5 0 0 0-5-5Z"/><path d="M5 13h14v8H5Z"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/><path d="M12 1v2"/></svg>
+                )}
+                {p.icon === 'sport' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20"/><path d="M12 2a14.5 14.5 0 0 1 0 20"/><path d="M2 12h20"/></svg>
+                )}
+              </div>
+              <div class="poi-body">
+                <p class="poi-label">{p.label}</p>
+                <p class="poi-sub">{p.sub}</p>
+              </div>
+              <div class="poi-meta">
+                {p.walk && (
+                  <span class="poi-walk">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m11 18-1 4M9 13l-2 4 4 1 2-3 4 1 1-4-3-3-1-3-3 1-2 3-3-2"/></svg>
+                    <span>{p.walk}</span>
+                  </span>
+                )}
+                <a href={dirUrl(p)} class="poi-dir" target="_blank" rel="noopener noreferrer" aria-label={`${s.localisation.directions} — ${p.label}`}>
+                  <span>{s.localisation.directions}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</div>
+
+<style>
+  .map-poi {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+    width: 100%;
+  }
+
+  /* ============ CARTE ============ */
+  .map-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .map-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    max-height: 70vh;
+    object-fit: cover;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 12px 36px -24px rgba(21, 23, 26, 0.18);
+  }
+  .map-fallback {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 70vh;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  @media (min-width: 720px) {
+    .map-img,
+    .map-fallback {
+      aspect-ratio: 16 / 9;
+      max-height: 460px;
+    }
+  }
+  @media (min-width: 1100px) {
+    .map-img,
+    .map-fallback {
+      aspect-ratio: 21 / 9;
+      max-height: 480px;
+    }
+  }
+  .map-fallback iframe { width: 100%; height: 100%; display: block; }
+
+  .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+    padding: 0;
+    color: var(--ink-2);
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: var(--tr-wide);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 1px var(--line-2);
+    flex-shrink: 0;
+  }
+
+  /* ============ SECTIONS POI ============ */
+  .poi-sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+  .poi-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .poi-section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .poi-section-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .poi-section-title {
+    font-size: var(--step-3);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .poi-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+  .poi-card {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: border-color var(--dur-1) var(--ease),
+                transform var(--dur-1) var(--ease),
+                box-shadow var(--dur-1) var(--ease);
+  }
+  .poi-card:hover {
+    border-color: var(--cat, var(--accent));
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px -16px rgba(21, 23, 26, 0.18);
+  }
+
+  .poi-icon {
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--cat, var(--accent)) 12%, transparent);
+    color: var(--cat, var(--accent));
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .poi-icon svg { width: 20px; height: 20px; }
+
+  .poi-body { min-width: 0; }
+  .poi-label {
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 0.1rem;
+  }
+  .poi-sub {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .poi-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+    text-align: end;
+  }
+  .poi-walk {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    letter-spacing: var(--tr-wide);
+  }
+  .poi-walk svg { color: var(--cat, var(--accent)); }
+  .poi-dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--cat, var(--accent));
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-1) var(--ease);
+  }
+  .poi-dir:hover { border-bottom-color: currentColor; }
+
+  /* RTL adjustments */
+  [dir="rtl"] .poi-meta { align-items: flex-start; text-align: start; }
+  [dir="rtl"] .poi-dir svg { transform: scaleX(-1); }
+
+  /* ============ Mobile-first → desktop ============ */
+  @media (min-width: 600px) {
+    .poi-list { grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+  }
+  @media (min-width: 960px) {
+    .poi-list { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .poi-card {
+      grid-template-columns: 32px 1fr;
+      grid-template-areas:
+        "icon body"
+        ".    meta";
+    }
+    .poi-icon { grid-area: icon; width: 32px; height: 32px; }
+    .poi-icon svg { width: 18px; height: 18px; }
+    .poi-body { grid-area: body; }
+    .poi-meta {
+      grid-area: meta;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+</style>

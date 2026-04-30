@@ -1,0 +1,581 @@
+---
+import { type Locale, DEFAULT_LOCALE, formatDate, formatPrice } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Lot {
+  type: string;
+  lot: string;
+  prixOld: number;
+  prix: number;
+  save: number;
+}
+
+interface Props {
+  deadline: string;
+  remiseMax: number;
+  reservatairesRestants?: number;
+  bonusCuisine?: number;
+  lots: Lot[];
+  lang?: Locale;
+}
+
+const {
+  deadline,
+  remiseMax,
+  reservatairesRestants = 5,
+  bonusCuisine = 4000,
+  lots,
+  lang = DEFAULT_LOCALE,
+} = Astro.props;
+const s = t(lang);
+
+const remiseMaxFmt = formatPrice(remiseMax, lang);
+const bonusFmt = formatPrice(bonusCuisine, lang);
+const deadlineLabel = formatDate(deadline, lang);
+const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang}/mentions-legales#offre`;
+---
+
+<section class="offer" id="offre" data-offer-section data-deadline={deadline} aria-label={s.offer.section_label}>
+  <div class="container is-xl">
+    <header class="offer-head reveal">
+      <span class="offer-tag">
+        <span class="offer-pulse" aria-hidden="true"></span>
+        {s.offer.tag}
+      </span>
+      <h2 class="offer-title">
+        {s.offer.title_prefix} <span class="offer-amount">−{remiseMaxFmt}</span>
+        <span class="offer-or">{s.offer.title_or}</span>
+      </h2>
+      <p class="offer-lead">{s.offer.lead_body}</p>
+    </header>
+
+    <div class="offer-grid">
+      <!-- TABLEAU PRIX BARRÉS -->
+      <div class="offer-table reveal">
+        <div class="offer-table-head">
+          <span>{s.offer.table_h}</span>
+        </div>
+        <ul class="lot-list">
+          {lots.map((l) => (
+            <li class="lot-row">
+              <div class="lot-id">
+                <span class="lot-type">{l.type}</span>
+                <span class="lot-num">{s.offer.table_lot} {l.lot}</span>
+              </div>
+              <div class="lot-prices">
+                <span class="lot-old" aria-label={s.offer.table_before}>
+                  {formatPrice(l.prixOld, lang)}
+                </span>
+                <span class="lot-new" aria-label={s.offer.table_after}>
+                  {formatPrice(l.prix, lang)}
+                </span>
+              </div>
+              <div class="lot-save" aria-label={s.offer.table_save}>
+                <span class="lot-save-arrow" aria-hidden="true">↓</span>
+                <span class="lot-save-amount">−{formatPrice(l.save, lang)}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <!-- BONUS CUISINE -->
+        <div class="offer-bonus" role="region" aria-label={s.offer.bonus_title}>
+          <img
+            src="/cuisine.png"
+            alt=""
+            width="64"
+            height="64"
+            class="bonus-icon"
+            loading="lazy"
+            aria-hidden="true"
+          />
+          <div class="bonus-content">
+            <span class="bonus-tag">{s.offer.bonus_tag}</span>
+            <h3 class="bonus-title">−{bonusFmt} {lang === 'ar' ? 'على مطبخكم' : (lang === 'en' ? 'on your kitchen' : 'sur votre cuisine')}</h3>
+            <p class="bonus-body">{s.offer.bonus_body}</p>
+            <p class="bonus-subtitle">{s.offer.bonus_subtitle}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPTEUR -->
+      <aside class="offer-counter reveal" aria-label={s.offer.counter_label}>
+        <p class="counter-label">{s.offer.counter_label}</p>
+        <p class="counter-deadline">{deadlineLabel}</p>
+        <div class="counter-grid" data-offer-countdown>
+          <div class="counter-cell">
+            <span class="counter-num" data-d>—</span>
+            <span class="counter-unit">{s.offer.cd_d}</span>
+          </div>
+          <div class="counter-cell">
+            <span class="counter-num" data-h>—</span>
+            <span class="counter-unit">{s.offer.cd_h}</span>
+          </div>
+          <div class="counter-cell">
+            <span class="counter-num" data-m>—</span>
+            <span class="counter-unit">{s.offer.cd_m}</span>
+          </div>
+          <div class="counter-cell">
+            <span class="counter-num" data-s>—</span>
+            <span class="counter-unit">{s.offer.cd_s}</span>
+          </div>
+        </div>
+        <div class="counter-stock">
+          <span class="counter-stock-num">{reservatairesRestants}</span>
+          <span class="counter-stock-label">{s.offer.stock_label}</span>
+        </div>
+
+        <div class="counter-actions">
+          <a href="#contact" class="btn btn--primary btn--lg btn--block">
+            <span>{s.offer.cta_lock}</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="tel:+33763277878" class="counter-tel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <span>07 63 27 78 78</span>
+          </a>
+        </div>
+      </aside>
+    </div>
+
+    <p class="offer-fine reveal">
+      {s.offer.fine_prefix}<a href={offerHref}>{s.offer.fine_link}</a>{s.offer.fine_suffix}
+    </p>
+  </div>
+</section>
+
+<style>
+  .offer {
+    background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg) 100%);
+    padding-block: var(--s-8);
+    border-block: 1px solid var(--line);
+  }
+
+  /* ============ HEAD ============ */
+  .offer-head {
+    text-align: center;
+    margin-bottom: var(--s-6);
+    max-width: 720px;
+    margin-inline: auto;
+  }
+  .offer-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tr-mono);
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    background: var(--accent-soft);
+    border-radius: 999px;
+    margin-bottom: var(--s-4);
+  }
+  .offer-pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(129, 41, 51, 0.6);
+    animation: offer-pulse 2s var(--ease) infinite;
+  }
+  @keyframes offer-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(129, 41, 51, 0.55); }
+    70% { box-shadow: 0 0 0 10px rgba(129, 41, 51, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(129, 41, 51, 0); }
+  }
+  .offer-title {
+    font-size: var(--step-6);
+    line-height: 1;
+    margin-bottom: var(--s-3);
+    letter-spacing: -0.02em;
+  }
+  .offer-amount {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 700;
+  }
+  .offer-or {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-style: italic;
+    color: var(--ink-2);
+    font-weight: 400;
+    margin-top: 0.25rem;
+  }
+  .offer-lead {
+    font-size: var(--step-2);
+    line-height: var(--lh-snug);
+    color: var(--ink-2);
+    margin-inline: auto;
+    max-width: 56ch;
+  }
+  .offer-lead strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ GRID ============ */
+  .offer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+    align-items: start;
+  }
+
+  /* ============ TABLE PRIX BARRÉS ============ */
+  .offer-table {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .offer-table-head {
+    background: var(--ink);
+    color: #FFFFFF;
+    padding: var(--s-3) var(--s-4);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    font-weight: 600;
+  }
+  .lot-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .lot-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "id save"
+      "prices prices";
+    gap: var(--s-2) var(--s-3);
+    align-items: center;
+    padding: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+  .lot-row:first-child { border-top: 0; }
+
+  .lot-id {
+    grid-area: id;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .lot-type {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .lot-num {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+  }
+
+  .lot-prices {
+    grid-area: prices;
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+  }
+  .lot-old {
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    color: var(--ink-3);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: var(--accent);
+  }
+  .lot-new {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .lot-save {
+    grid-area: save;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--accent);
+    color: #FFFFFF;
+    padding: 0.35rem 0.6rem;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: var(--tr-wide);
+    white-space: nowrap;
+  }
+  .lot-save-arrow { font-size: 12px; }
+
+  /* ============ BONUS CUISINE ============ */
+  .offer-bonus {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--s-4);
+    align-items: start;
+    padding: var(--s-5) var(--s-4);
+    background: var(--bg-3);
+    border-top: 1px solid var(--line);
+  }
+  .bonus-icon {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .bonus-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .bonus-tag {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tr-mono);
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .bonus-title {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    color: var(--ink);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .bonus-body {
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    line-height: var(--lh-normal);
+    max-width: 50ch;
+  }
+  .bonus-subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: var(--tr-wide);
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+  }
+
+  /* ============ COUNTER ============ */
+  .offer-counter {
+    background: var(--ink);
+    color: #FFFFFF;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 24px 60px -32px rgba(46, 26, 28, 0.3);
+    position: relative;
+    overflow: hidden;
+    align-self: stretch;
+  }
+  .counter-label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tr-mono);
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: var(--s-2);
+  }
+  .counter-deadline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-3);
+    color: var(--cream);
+    margin-bottom: var(--s-4);
+    line-height: 1.2;
+  }
+  .counter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-2);
+    padding-block: var(--s-3);
+    border-block: 1px solid rgba(240, 226, 200, 0.12);
+    margin-bottom: var(--s-4);
+  }
+  .counter-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-align: center;
+  }
+  .counter-num {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .counter-unit {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .counter-stock {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: var(--s-4);
+  }
+  .counter-stock-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-6);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1;
+  }
+  .counter-stock-label {
+    font-size: var(--step-0);
+    color: rgba(255, 255, 255, 0.7);
+    text-align: start;
+  }
+  .counter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding-top: var(--s-4);
+    border-top: 1px solid rgba(240, 226, 200, 0.12);
+  }
+  .counter-tel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--cream);
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    font-weight: 500;
+    padding: 0.5rem;
+  }
+  .counter-tel:hover { color: #FFFFFF; }
+
+  /* ============ FINE ============ */
+  .offer-fine {
+    margin-top: var(--s-5);
+    text-align: center;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+  .offer-fine a {
+    color: var(--accent);
+    border-bottom: 1px solid currentColor;
+  }
+
+  /* ============ RESPONSIVE — mobile-first ============ */
+  @media (min-width: 600px) {
+    .lot-row {
+      grid-template-columns: 1.2fr 1.8fr auto;
+      grid-template-areas: "id prices save";
+      gap: var(--s-4);
+    }
+    .lot-prices { flex-direction: row; }
+  }
+  @media (min-width: 720px) {
+    .offer { padding-block: var(--s-9); }
+    .offer-title { font-size: var(--step-7); }
+    .offer-bonus {
+      grid-template-columns: 80px 1fr;
+      padding: var(--s-6);
+      align-items: center;
+    }
+    .bonus-icon { width: 80px; height: 80px; }
+  }
+  @media (min-width: 960px) {
+    .offer-grid {
+      grid-template-columns: 1.6fr 1fr;
+      gap: var(--s-6);
+    }
+  }
+  @media (max-width: 540px) {
+    .offer-title { font-size: var(--step-5); }
+    .lot-new { font-size: var(--step-4); }
+    .counter-num { font-size: var(--step-4); }
+    .offer-bonus {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .bonus-icon { margin-inline: auto; }
+  }
+  /* Très petit écran : grille 2x2 pour garder les secondes visibles (effet vivant) */
+  @media (max-width: 380px) {
+    .counter-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-3) var(--s-2); }
+    .counter-num { font-size: var(--step-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .offer-pulse { animation: none; }
+  }
+</style>
+
+<script>
+  function bindOfferCountdown() {
+    const sec = document.querySelector<HTMLElement>('[data-offer-section]');
+    if (!sec || sec.dataset.bound === 'true') return;
+    sec.dataset.bound = 'true';
+
+    const target = new Date(sec.dataset.deadline || '').getTime();
+    if (Number.isNaN(target)) return;
+
+    const dEl = sec.querySelector<HTMLElement>('[data-d]');
+    const hEl = sec.querySelector<HTMLElement>('[data-h]');
+    const mEl = sec.querySelector<HTMLElement>('[data-m]');
+    const sEl = sec.querySelector<HTMLElement>('[data-s]');
+
+    function pad(n: number) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+    function tick() {
+      const diff = target - Date.now();
+      if (diff <= 0) {
+        if (dEl) dEl.textContent = '00';
+        if (hEl) hEl.textContent = '00';
+        if (mEl) mEl.textContent = '00';
+        if (sEl) sEl.textContent = '00';
+        return;
+      }
+      const days = Math.floor(diff / 86_400_000);
+      const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+      const mins = Math.floor((diff % 3_600_000) / 60_000);
+      const secs = Math.floor((diff % 60_000) / 1_000);
+      if (dEl) dEl.textContent = pad(days);
+      if (hEl) hEl.textContent = pad(hours);
+      if (mEl) mEl.textContent = pad(mins);
+      if (sEl) sEl.textContent = pad(secs);
+    }
+
+    tick();
+    const id = window.setInterval(tick, 1_000);
+    document.addEventListener('astro:before-swap', () => window.clearInterval(id), { once: true });
+  }
+
+  bindOfferCountdown();
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-offer-section]').forEach((el) => {
+      el.dataset.bound = 'false';
+    });
+    bindOfferCountdown();
+  });
+</script>

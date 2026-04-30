@@ -1,0 +1,271 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props { lang?: Locale; }
+const { lang = DEFAULT_LOCALE } = Astro.props;
+const s = t(lang);
+const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales#donnees' : `/${lang}/mentions-legales#donnees`;
+const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
+---
+
+<form
+  id="lead-form"
+  class="lead-form"
+  novalidate
+  data-lang={lang}
+  data-merci-href={merciHref}
+  data-err-prenom={s.form.err_prenom}
+  data-err-nom={s.form.err_nom}
+  data-err-email={s.form.err_email}
+  data-err-tel={s.form.err_tel}
+  data-err-consent={s.form.err_consent}
+  data-err-required={s.form.err_required_check}
+  data-err-generic={s.form.err_generic}
+  data-msg-success={s.form.success}
+  data-msg-submitting={s.form.submitting}
+  data-msg-submit={s.form.submit}
+>
+  <div class="form-grid">
+    <div class="form-field">
+      <label for="lf-prenom">{s.form.field_prenom} <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-prenom" name="prenom" type="text" autocomplete="given-name" required minlength="2" />
+      <span class="err">{s.form.err_prenom}</span>
+    </div>
+    <div class="form-field">
+      <label for="lf-nom">{s.form.field_nom} <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-nom" name="nom" type="text" autocomplete="family-name" required minlength="2" />
+      <span class="err">{s.form.err_nom}</span>
+    </div>
+    <div class="form-field full">
+      <label for="lf-email">{s.form.field_email} <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-email" name="email" type="email" autocomplete="email" required inputmode="email" placeholder={s.form.placeholder_email} />
+      <span class="err">{s.form.err_email}</span>
+    </div>
+    <div class="form-field full">
+      <label for="lf-tel">{s.form.field_tel} <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-tel" name="telephone" type="tel" autocomplete="tel" required inputmode="tel" placeholder={s.form.placeholder_tel} pattern="[+0-9 .()\-]{10,}" />
+      <span class="help">{s.form.tel_help}</span>
+      <span class="err">{s.form.err_tel}</span>
+    </div>
+    <div class="form-field full">
+      <label for="lf-type">{s.form.field_type}</label>
+      <select id="lf-type" name="type_logement">
+        <option value="">{s.form.type_indiff}</option>
+        <option value="T2">{s.apparts.type_t2} (175 000 €)</option>
+        <option value="T3">{s.apparts.type_t3} (196 000 €)</option>
+        <option value="T4">{s.apparts.type_t4} (235 000 €)</option>
+        <option value="T5">{s.apparts.type_t5} (312 000 €)</option>
+      </select>
+    </div>
+    <div class="form-field full">
+      <label for="lf-projet">{s.form.field_projet} <span class="muted">{s.form.optional}</span></label>
+      <textarea id="lf-projet" name="projet" rows="3" placeholder={s.form.placeholder_projet}></textarea>
+    </div>
+  </div>
+
+  <div class="form-consents">
+    <label class="form-checkbox">
+      <input type="checkbox" name="consent_sms" required />
+      <span>
+        {s.form.consent_sms}
+        <span class="req" aria-hidden="true">*</span>
+      </span>
+    </label>
+    <label class="form-checkbox">
+      <input type="checkbox" name="consent_rgpd" required />
+      <span>
+        {s.form.consent_rgpd_prefix}<a href={legalHref}>{s.form.consent_rgpd_link}</a>{s.form.consent_rgpd_suffix}
+        <span class="req" aria-hidden="true">*</span>
+      </span>
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn--primary btn--lg" data-submit>
+      <span data-label>{s.form.submit}</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </button>
+    <p class="form-rgpd-note">
+      {s.form.rgpd_note_prefix}<a href="mailto:contact@ozimmo.fr">{s.form.rgpd_note_email}</a>{s.form.rgpd_note_suffix}
+    </p>
+  </div>
+
+  <div class="form-status" role="status" aria-live="polite" data-status></div>
+
+  <input type="hidden" name="source" value="site:stayn-stains.fr" />
+  <input type="hidden" name="lang" value={lang} />
+  <input type="text" name="company" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+</form>
+
+<style>
+  .lead-form {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: clamp(1.1rem, 3vw, 2rem);
+    box-shadow: 0 12px 36px -24px rgba(21, 23, 26, 0.18);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+  .form-field { gap: var(--s-2); }
+  .form-field.full { grid-column: 1 / -1; }
+
+  .muted { color: var(--ink-3); font-weight: 400; }
+
+  .form-consents {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding-block: var(--s-4);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-block: var(--s-4);
+  }
+
+  .form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    align-items: flex-start;
+  }
+  .form-actions .btn { width: 100%; min-width: 0; }
+  .form-rgpd-note {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    max-width: 56ch;
+    line-height: var(--lh-normal);
+  }
+
+  .hp {
+    position: absolute !important;
+    inset-inline-start: -9999px;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (min-width: 540px) {
+    .form-grid { grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+    .form-actions { flex-direction: row; align-items: center; }
+    .form-actions .btn { width: auto; min-width: 280px; }
+  }
+</style>
+
+<script>
+  function bindLeadForm() {
+    const form = document.getElementById('lead-form') as HTMLFormElement | null;
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+
+    const status = form.querySelector('[data-status]') as HTMLElement | null;
+    const btn = form.querySelector('[data-submit]') as HTMLButtonElement | null;
+    const label = form.querySelector('[data-label]') as HTMLElement | null;
+
+    const ERR = {
+      consent: form.dataset.errConsent || 'Veuillez accepter les conditions.',
+      required: form.dataset.errRequired || 'Merci de vérifier les champs en surbrillance.',
+      generic: form.dataset.errGeneric || 'Erreur. Réessayez plus tard.',
+    };
+    const MSG = {
+      submitting: form.dataset.msgSubmitting || 'Envoi en cours…',
+      submit: form.dataset.msgSubmit || 'Envoyer',
+    };
+    const merciHref = form.dataset.merciHref || '/merci';
+
+    function setError(field: HTMLElement | null, on: boolean) {
+      if (!field) return;
+      field.classList.toggle('is-error', on);
+    }
+    function showStatus(kind: 'success' | 'error', msg: string) {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = `form-status is-${kind}`;
+    }
+    function clearStatus() {
+      if (!status) return;
+      status.className = 'form-status';
+      status.textContent = '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearStatus();
+
+      const fd = new FormData(form);
+      const honey = (fd.get('company') as string) || '';
+      if (honey.trim() !== '') {
+        showStatus('success', form.dataset.msgSuccess || 'Merci.');
+        return;
+      }
+
+      const payload: Record<string, unknown> = {
+        prenom: (fd.get('prenom') as string)?.trim(),
+        nom: (fd.get('nom') as string)?.trim(),
+        email: (fd.get('email') as string)?.trim(),
+        telephone: (fd.get('telephone') as string)?.trim(),
+        type_logement: (fd.get('type_logement') as string) || '',
+        projet: ((fd.get('projet') as string) || '').trim(),
+        consent_sms: !!fd.get('consent_sms'),
+        consent_rgpd: !!fd.get('consent_rgpd'),
+        source: (fd.get('source') as string) || 'site:stayn-stains.fr',
+        lang: (fd.get('lang') as string) || 'fr',
+      };
+
+      let valid = true;
+      const fields = form.querySelectorAll<HTMLElement>('.form-field');
+      fields.forEach((f) => f.classList.remove('is-error'));
+
+      if (!payload.prenom) { setError(form.querySelector('#lf-prenom')?.closest('.form-field') || null, true); valid = false; }
+      if (!payload.nom) { setError(form.querySelector('#lf-nom')?.closest('.form-field') || null, true); valid = false; }
+      const emailOk = typeof payload.email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email);
+      if (!emailOk) { setError(form.querySelector('#lf-email')?.closest('.form-field') || null, true); valid = false; }
+      const telOk = typeof payload.telephone === 'string' && payload.telephone.replace(/[^\d+]/g, '').length >= 9;
+      if (!telOk) { setError(form.querySelector('#lf-tel')?.closest('.form-field') || null, true); valid = false; }
+
+      if (!payload.consent_sms || !payload.consent_rgpd) {
+        showStatus('error', ERR.consent);
+        valid = false;
+      }
+
+      if (!valid) {
+        if (!status?.textContent) {
+          showStatus('error', ERR.required);
+        }
+        const firstError = form.querySelector('.form-field.is-error input, .form-field.is-error select, .form-field.is-error textarea') as HTMLElement | null;
+        firstError?.focus();
+        return;
+      }
+
+      if (btn) btn.disabled = true;
+      if (label) label.textContent = MSG.submitting;
+
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(`http_${res.status}`);
+
+        if (typeof (window as any).plausible === 'function') {
+          (window as any).plausible('lead_submit', {
+            props: { type: payload.type_logement || 'indifferent', lang: payload.lang },
+          });
+        }
+        window.location.assign(merciHref);
+      } catch {
+        if (btn) btn.disabled = false;
+        if (label) label.textContent = MSG.submit;
+        showStatus('error', ERR.generic);
+      }
+    });
+  }
+
+  bindLeadForm();
+  document.addEventListener('astro:page-load', bindLeadForm);
+</script>

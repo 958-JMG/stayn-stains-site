@@ -1,0 +1,168 @@
+---
+import { Image } from 'astro:assets';
+import faceImg from '../assets/face.jpg';
+import interieurImg from '../assets/interieur.jpg';
+import terrasseImg from '../assets/terrasse.jpg';
+
+interface Props { lang?: string; }
+
+// 3 slides : façade (eager + priority) → intérieur → terrasse.
+// Auto-rotation 6s, pause sur hover, respect prefers-reduced-motion.
+const slides = [
+  { src: faceImg,      alt: "Façade de la résidence Stay'n à Stains" },
+  { src: interieurImg, alt: "Vue intérieure d'un logement Stay'n — séjour lumineux et cuisine ouverte" },
+  { src: terrasseImg,  alt: "Vue d'une terrasse Stay'n donnant sur le jardin intérieur" },
+];
+---
+
+<div class="hero-slider" data-hero-slider>
+  {slides.map((slide, i) => (
+    <div class={`hero-slide ${i === 0 ? 'is-active' : ''}`} data-slide={i}>
+      <Image
+        src={slide.src}
+        alt={slide.alt}
+        widths={[480, 768, 1200, 1600, 2000]}
+        sizes="100vw"
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : 'auto'}
+        quality={82}
+        class="hero-slide-img"
+      />
+    </div>
+  ))}
+  <div class="hero-veil"></div>
+
+  <div class="hero-dots" role="tablist" aria-label="Visuels du programme">
+    {slides.map((_, i) => (
+      <button
+        type="button"
+        class={`hero-dot ${i === 0 ? 'is-active' : ''}`}
+        data-slide-btn={i}
+        role="tab"
+        aria-label={`Visuel ${i + 1} sur ${slides.length}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+      ></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .hero-slider {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1200ms var(--ease);
+    will-change: opacity;
+  }
+  .hero-slide.is-active { opacity: 1; }
+  .hero-slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(28, 14, 14, 0.55) 0%, rgba(28, 14, 14, 0.18) 40%, rgba(28, 14, 14, 0.85) 100%),
+      linear-gradient(95deg, rgba(46, 26, 28, 0.7) 0%, rgba(46, 26, 28, 0.05) 60%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .hero-dots {
+    position: absolute;
+    bottom: var(--s-5);
+    inset-inline-end: var(--gutter);
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+  }
+  .hero-dot {
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: background var(--dur-1) var(--ease),
+                width var(--dur-2) var(--ease);
+  }
+  .hero-dot:hover { background: rgba(255, 255, 255, 0.7); }
+  .hero-dot.is-active {
+    background: var(--cream);
+    width: 28px;
+  }
+  .hero-dot:focus-visible {
+    outline: 2px solid var(--cream);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-slide { transition: none; }
+  }
+</style>
+
+<script>
+  function bindHeroSlider() {
+    const root = document.querySelector<HTMLElement>('[data-hero-slider]');
+    if (!root || root.dataset.bound === 'true') return;
+    root.dataset.bound = 'true';
+
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-slide-btn]'));
+    if (slides.length < 2) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let interval: number | undefined;
+
+    function show(idx: number) {
+      const target = ((idx % slides.length) + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle('is-active', i === target));
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === target);
+        d.setAttribute('aria-selected', i === target ? 'true' : 'false');
+      });
+      current = target;
+    }
+
+    function next() { show(current + 1); }
+
+    function start() {
+      if (reduced) return;
+      stop();
+      interval = window.setInterval(next, 6000);
+    }
+    function stop() {
+      if (interval) { window.clearInterval(interval); interval = undefined; }
+    }
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => { show(i); start(); });
+    });
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+
+    start();
+
+    document.addEventListener('astro:before-swap', stop, { once: true });
+  }
+
+  bindHeroSlider();
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-hero-slider]').forEach((el) => {
+      el.dataset.bound = 'false';
+    });
+    bindHeroSlider();
+  });
+</script>

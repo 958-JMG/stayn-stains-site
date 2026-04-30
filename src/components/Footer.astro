@@ -1,0 +1,167 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props { lang?: Locale; }
+const { lang = DEFAULT_LOCALE } = Astro.props;
+const s = t(lang);
+const year = new Date().getFullYear();
+const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/mentions-legales`;
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <img src="/logo-stayn.png" alt="Stay'n" class="footer-logo" width="220" height="220" />
+      <p class="footer-tagline display-italic">{s.footer.tagline}</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>{s.footer.sale_h}</h4>
+      <ul>
+        <li>7-14 avenue Marcel Cachin</li>
+        <li>93240 Stains</li>
+        <li><a href="tel:+33763277878">07 63 27 78 78</a></li>
+        <li><a href="mailto:contact@ozimmo.fr">contact@ozimmo.fr</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>{s.footer.promo_h}</h4>
+      <ul>
+        <li>CD LINK Promotion</li>
+        <li>41 avenue des Ternes</li>
+        <li>75017 Paris</li>
+        <li>RCS Paris 895 060 317</li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>{s.footer.legal_h}</h4>
+      <ul>
+        <li><a href={legalHref}>{s.footer.legal_mentions}</a></li>
+        <li><a href={`${legalHref}#cookies`}>{s.footer.legal_cookies}</a></li>
+        <li><a href={`${legalHref}#donnees`}>{s.footer.legal_data}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-meta">
+    <div class="footer-legal">
+      <span>{s.footer.copyright(year)}</span>
+      <span class="sep">·</span>
+      <span>{s.footer.rights}</span>
+    </div>
+    <div class="footer-958">
+      {s.footer.powered_by}
+      <a href="https://www.958.fr" target="_blank" rel="noopener">9·58</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--s-10);
+    padding-block: var(--s-9) var(--s-6);
+    background: linear-gradient(180deg, #812933 0%, #6B2229 100%);
+    color: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    padding-bottom: var(--s-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    align-items: start;
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    align-items: flex-start;
+  }
+  .footer-logo {
+    width: 140px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+    object-fit: contain;
+  }
+  .footer-tagline {
+    font-size: var(--step-1);
+    color: var(--cream);
+    max-width: 24ch;
+    line-height: var(--lh-snug);
+    margin-top: var(--s-2);
+  }
+
+  .footer-col h4 {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    color: var(--cream);
+    margin-bottom: var(--s-3);
+  }
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .footer-col li,
+  .footer-col a {
+    font-size: var(--step-0);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .footer-col a {
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .footer-col a:hover {
+    color: #FFFFFF;
+    border-bottom-color: var(--cream);
+  }
+
+  .footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-2);
+    padding-top: var(--s-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: var(--tr-wide);
+  }
+  .footer-meta .sep { opacity: 0.4; margin-inline: 0.4rem; }
+  .footer-958 a {
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-inline-start: 0.35rem;
+  }
+  .footer-958 a:hover {
+    color: #FFFFFF;
+    border-bottom-color: var(--cream);
+  }
+
+  @media (min-width: 720px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+  }
+  @media (min-width: 960px) {
+    .footer-grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: var(--s-7);
+      padding-bottom: var(--s-7);
+    }
+  }
+  @media (max-width: 540px) {
+    .footer-meta { flex-direction: column; align-items: flex-start; }
+  }
+</style>

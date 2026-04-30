@@ -1,0 +1,27 @@
+// Cloudflare Worker — entrypoint unifié pour stayn-stains.fr
+// /api/lead est traité par le worker (proxy n8n).
+// Tout le reste est servi depuis dist/ via le binding ASSETS.
+{
+  "name": "stayn-stains-site",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Variables publiques injectées au runtime du worker.
+  // - N8N_WEBHOOK_URL : URL du webhook n8n (payload non sensible).
+  // - PUBLIC_GOOGLE_MAPS_KEY : clé Maps JS API restreinte par HTTP referrer
+  //   (à brancher dans Google Cloud Console : whitelist `*.stayn-stains.fr`,
+  //   `*.pages.dev`, `localhost:4321`). Exposée côté client via Astro.
+  "vars": {
+    "N8N_WEBHOOK_URL": "https://jmg958.app.n8n.cloud/webhook/stayn-stains-lead",
+    "PUBLIC_GOOGLE_MAPS_KEY": ""
+  }
+}

@@ -1,0 +1,515 @@
+---
+import { Image } from 'astro:assets';
+import LeadForm from './LeadForm.astro';
+import UrgencyBar from './UrgencyBar.astro';
+import OfferShowcase from './OfferShowcase.astro';
+import MapPOI from './MapPOI.astro';
+import HeroSlider from './HeroSlider.astro';
+import { type Locale, DEFAULT_LOCALE, formatPrice } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+import interieurImg from '../assets/interieur.jpg';
+import terrasseImg from '../assets/terrasse.jpg';
+
+interface Props {
+  lang?: Locale;
+  deadline?: string;
+}
+const {
+  lang = DEFAULT_LOCALE,
+  deadline = '2026-06-15T23:59:59+02:00',
+} = Astro.props;
+const s = t(lang);
+
+// Lots de l'offre de printemps — prix barrés réels.
+// À actualiser avec OZIMMO selon disponibilité.
+const apparts = [
+  { type: s.apparts.type_t2, prixOld: 175000, prix: 168000, lot: 'A32', save: 7000 },
+  { type: s.apparts.type_t3, prixOld: 198000, prix: 189000, lot: 'A23', save: 9000 },
+  { type: s.apparts.type_t4, prixOld: 234560, prix: 223700, lot: 'C11', save: 10860 },
+  { type: s.apparts.type_t5, prixOld: 312000, prix: 298000, lot: 'A51', save: 14000 },
+];
+
+const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/mentions-legales`;
+---
+
+<UrgencyBar deadline={deadline} reservatairesRestants={5} lang={lang} />
+
+<!-- HERO -->
+<section class="hero">
+  <HeroSlider lang={lang} />
+  <div class="hero-grid container is-xl">
+    <div class="hero-text reveal">
+      <span class="eyebrow">{s.hero.eyebrow}</span>
+      <h1>
+        {s.hero.h1_line1}
+        <em>{s.hero.h1_line2}</em>
+      </h1>
+      <p class="lead">
+        <strong>{s.hero.lead_strong}</strong>
+        {s.hero.lead_body}
+      </p>
+      <div class="hero-actions">
+        <a href="#offre" class="btn btn--primary btn--lg">
+          <span>{s.hero.cta_offer}</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="#programme" class="btn btn--ghost btn--lg">
+          <span>{s.hero.cta_program}</span>
+        </a>
+      </div>
+      <ul class="hero-bullets">
+        <li><span class="dot" aria-hidden="true"></span>{s.hero.bullet_re2020}</li>
+        <li><span class="dot" aria-hidden="true"></span>{s.hero.bullet_tva}</li>
+        <li><span class="dot" aria-hidden="true"></span>{s.hero.bullet_ptz}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER -->
+<OfferShowcase
+  deadline={deadline}
+  remiseMax={15000}
+  reservatairesRestants={5}
+  bonusCuisine={4000}
+  lots={apparts}
+  lang={lang}
+/>
+
+<!-- PROGRAMME -->
+<section id="programme" class="section">
+  <div class="container is-wide">
+    <header class="section-head reveal">
+      <span class="eyebrow">{s.programme.eyebrow}</span>
+      <h2>{s.programme.h2}</h2>
+    </header>
+    <div class="features reveal-stagger">
+      <article class="feature reveal">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12 12 4l9 8" /><path d="M5 10v10h14V10" /><path d="M9 20v-6h6v6" />
+          </svg>
+        </div>
+        <h3>{s.programme.f1_h}</h3>
+        <p>{s.programme.f1_p}</p>
+      </article>
+      <article class="feature reveal">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+        </div>
+        <h3>{s.programme.f2_h}</h3>
+        <p>{s.programme.f2_p}</p>
+      </article>
+      <article class="feature reveal">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M5 6h11a4 4 0 0 1 0 8H8a4 4 0 0 0 0 8h11" />
+          </svg>
+        </div>
+        <h3>{s.programme.f3_h}</h3>
+        <p>{s.programme.f3_p}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- INTERIOR -->
+<section class="section is-tight surface-warm interior">
+  <div class="container is-wide interior-grid">
+    <div class="interior-text reveal">
+      <span class="eyebrow">{s.interior.eyebrow}</span>
+      <h2>{s.interior.h2}</h2>
+      <p class="lead">
+        <strong>{s.interior.lead_strong}</strong>{s.interior.lead_body}
+      </p>
+      <a href="#contact" class="link-arrow">
+        {s.interior.cta} <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="interior-media reveal">
+      <Image
+        src={interieurImg}
+        alt={s.interior.img_alt}
+        widths={[480, 768, 1200]}
+        sizes="(min-width: 960px) 50vw, 100vw"
+        loading="lazy"
+        quality={80}
+        class="interior-img"
+      />
+    </div>
+  </div>
+</section>
+
+<!-- APPARTEMENTS -->
+<section id="appartements" class="section">
+  <div class="container is-wide">
+    <header class="section-head reveal">
+      <span class="eyebrow">{s.apparts.eyebrow}</span>
+      <h2>{s.apparts.h2}</h2>
+      <p class="lead">{s.apparts.lead}</p>
+    </header>
+    <ul class="appart-grid reveal-stagger">
+      {apparts.map((a) => (
+        <li class="appart card reveal">
+          <div class="appart-head">
+            <span class="appart-type">{a.type}</span>
+            <span class="appart-lot">Lot {a.lot}</span>
+          </div>
+          <div class="appart-prices">
+            <span class="appart-old">{formatPrice(a.prixOld, lang)}</span>
+            <span class="appart-amount">{formatPrice(a.prix, lang)}</span>
+          </div>
+          <div class="appart-save-row">
+            <span class="appart-save">{formatPrice(-a.save, lang)}</span>
+            <a href="#contact" class="link-arrow">
+              {s.apparts.receive_plan} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="legal-note">
+      {s.apparts.legal_note_prefix}<a href={`${legalHref}#offre`}>{s.apparts.legal_link}</a>.
+    </p>
+  </div>
+</section>
+
+<!-- TRANSITION : photo terrasse pleine largeur entre Apparts et Localisation -->
+<section class="terrace-bridge reveal" aria-hidden="true">
+  <div class="container is-wide">
+    <Image
+      src={terrasseImg}
+      alt="Vue d'une terrasse de la résidence Stay'n donnant sur le jardin intérieur"
+      widths={[640, 1024, 1600, 2000]}
+      sizes="(min-width: 960px) 1200px, 100vw"
+      loading="lazy"
+      quality={82}
+      class="loc-photo-img"
+    />
+  </div>
+</section>
+
+<!-- LOCALISATION -->
+<section id="localisation" class="section is-tight loc">
+  <div class="container is-wide loc-head reveal">
+    <span class="eyebrow">{s.localisation.eyebrow}</span>
+    <h2>{s.localisation.h2}</h2>
+    <p class="lead">
+      <strong>{s.localisation.address_strong}</strong>{s.localisation.body}
+      <br />
+      <span class="display-italic loc-paris-inline">{s.localisation.paris_15}</span>
+    </p>
+  </div>
+  <div class="container is-wide loc-map">
+    <MapPOI lang={lang} />
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section is-loose contact">
+  <div class="container is-wide contact-grid">
+    <div class="contact-text reveal">
+      <span class="eyebrow">{s.contact.eyebrow}</span>
+      <h2>{s.contact.h2}</h2>
+      <p class="lead">
+        {s.contact.lead_body}<strong>{s.contact.lead_strong}</strong>
+      </p>
+      <div class="contact-block">
+        <h4>{s.contact.address_h}</h4>
+        <address>
+          7-14 avenue Marcel Cachin<br />
+          93240 Stains
+        </address>
+      </div>
+      <div class="contact-block">
+        <h4>{s.contact.tel_h}</h4>
+        <p><a href="tel:+33763277878">07 63 27 78 78</a></p>
+      </div>
+      <div class="contact-block">
+        <h4>{s.contact.email_h}</h4>
+        <p><a href="mailto:contact@ozimmo.fr">contact@ozimmo.fr</a></p>
+      </div>
+    </div>
+    <div class="contact-form reveal">
+      <LeadForm lang={lang} />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: clamp(480px, 78vh, 760px);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .hero-grid { position: relative; z-index: 3; width: 100%; padding-block: var(--s-8); }
+  .hero-text { max-width: 640px; }
+  .hero .eyebrow { color: var(--cream); margin-bottom: var(--s-3); }
+  .hero h1 { color: #FFFFFF; font-size: var(--step-7); line-height: 1.05; margin-bottom: var(--s-4); }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--cream);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    display: block;
+  }
+  .hero .lead { color: #E2DED2; margin-bottom: var(--s-5); max-width: 56ch; }
+  .hero .lead strong { color: #FFFFFF; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-bottom: var(--s-6); }
+  .hero-actions .btn--ghost { color: #FFFFFF; border-color: rgba(255, 255, 255, 0.4); }
+  .hero-actions .btn--ghost:hover { color: var(--cream); border-color: var(--cream); }
+  .hero-bullets {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-5);
+    color: #E2DED2;
+    font-size: var(--step--1);
+    font-family: var(--font-mono);
+    letter-spacing: var(--tr-mono);
+    text-transform: uppercase;
+  }
+  .hero-bullets li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .hero-bullets .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cream); }
+  @media (min-width: 720px) {
+    .hero-grid { padding-block: var(--s-9); }
+    .hero h1 { font-size: var(--step-8); }
+    .hero .lead { margin-bottom: var(--s-6); }
+    .hero-actions { margin-bottom: var(--s-7); }
+  }
+
+  /* SECTION HEAD */
+  .section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto var(--s-7);
+  }
+  .section-head .eyebrow { margin-bottom: var(--s-3); }
+  .section-head .lead { margin: var(--s-3) auto 0; }
+  @media (min-width: 720px) {
+    .section-head { margin-bottom: var(--s-8); }
+  }
+
+  /* FEATURES */
+  .features { display: grid; grid-template-columns: 1fr; gap: var(--s-4); }
+  .feature {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: var(--s-5);
+    border-radius: 4px;
+    transition: border-color var(--dur-2) var(--ease),
+                transform var(--dur-2) var(--ease),
+                box-shadow var(--dur-2) var(--ease);
+  }
+  .feature:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -22px rgba(129, 41, 51, 0.25);
+  }
+  .feature-icon {
+    width: 44px; height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 4px;
+    margin-bottom: var(--s-4);
+  }
+  .feature-icon svg { width: 22px; height: 22px; }
+  .feature h3 { font-size: var(--step-3); margin-bottom: var(--s-3); }
+  .feature p { color: var(--ink-2); }
+  @media (min-width: 720px) {
+    .features { gap: var(--s-5); }
+    .feature { padding: var(--s-6); }
+  }
+  @media (min-width: 900px) {
+    .features { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* INTERIOR */
+  .interior-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    align-items: center;
+  }
+  .interior-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .interior-text .lead { margin-block: var(--s-4) var(--s-5); }
+  @media (min-width: 900px) {
+    .interior-grid { grid-template-columns: 1fr 1fr; gap: var(--s-7); }
+  }
+
+  /* APPARTEMENTS */
+  .appart-grid { list-style: none; display: grid; grid-template-columns: 1fr; gap: var(--s-3); }
+  .appart { display: flex; flex-direction: column; gap: var(--s-3); }
+  .appart-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .appart-type {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: var(--tr-tight);
+  }
+  .appart-lot {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    letter-spacing: var(--tr-mono);
+    text-transform: uppercase;
+  }
+  .appart-surface { color: var(--ink-3); font-size: var(--step-0); }
+  .appart-prices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: auto;
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+  .appart-old {
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    color: var(--ink-3);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--accent);
+    line-height: 1.1;
+  }
+  .appart-amount {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .appart-save-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+  .appart-save {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.7rem;
+    background: var(--accent);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    font-weight: 700;
+    letter-spacing: var(--tr-wide);
+    border-radius: 2px;
+    line-height: 1;
+  }
+  .legal-note {
+    margin-top: var(--s-5);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    text-align: center;
+  }
+  .legal-note a { color: var(--accent); border-bottom: 1px solid currentColor; }
+  @media (min-width: 540px) {
+    .appart-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-4); }
+  }
+  @media (min-width: 1100px) {
+    .appart-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* LOCALISATION */
+  .loc { padding-block: var(--s-7); }
+  .loc-head {
+    text-align: center;
+    margin-bottom: var(--s-6);
+    max-width: 720px;
+  }
+  .loc-head .eyebrow { margin-bottom: var(--s-3); }
+  .loc-head .lead { margin: var(--s-3) auto 0; }
+  .loc-paris-inline { color: var(--accent); font-size: var(--step-3); }
+  .loc-map { margin-bottom: 0; }
+  .terrace-bridge {
+    padding-block: var(--s-7);
+  }
+  .loc-photo-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    max-height: 360px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 18px 40px -22px rgba(21, 23, 26, 0.18);
+  }
+  @media (min-width: 720px) {
+    .loc { padding-block: var(--s-8); }
+    .terrace-bridge { padding-block: var(--s-8); }
+    .loc-photo-img { aspect-ratio: 21 / 9; max-height: 420px; }
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    align-items: start;
+  }
+  .contact-text { padding-top: var(--s-2); }
+  .contact-text .lead { margin-block: var(--s-3) var(--s-5); }
+  .contact-block { margin-bottom: var(--s-4); }
+  .contact-block h4 {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    color: var(--ink-3);
+    margin-bottom: var(--s-2);
+  }
+  .contact-block address,
+  .contact-block p {
+    font-style: normal;
+    color: var(--ink);
+    font-size: var(--step-2);
+    line-height: var(--lh-snug);
+  }
+  .contact-block a {
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-2);
+    transition: color var(--dur-1) var(--ease),
+                border-color var(--dur-1) var(--ease);
+  }
+  .contact-block a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  @media (min-width: 960px) {
+    .contact-grid { grid-template-columns: 1fr 1.2fr; gap: var(--s-8); }
+    .contact-text .lead { margin-block: var(--s-4) var(--s-6); }
+    .contact-block { margin-bottom: var(--s-5); }
+  }
+
+  /* RTL — chevrons + transforms */
+  [dir="rtl"] .link-arrow span[aria-hidden="true"],
+  [dir="rtl"] .btn .arrow {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+</style>

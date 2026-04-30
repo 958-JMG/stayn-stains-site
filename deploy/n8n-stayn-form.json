@@ -1,0 +1,159 @@
+{
+  "name": "Stay'n Stains — Lead form",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stayn-stains-lead",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "id": "1",
+      "name": "Webhook · stayn-stains-lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [240, 320],
+      "webhookId": "stayn-stains-lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a1", "name": "received_at", "value": "={{ $now.toISO() }}", "type": "string" },
+            { "id": "a2", "name": "prenom", "value": "={{ $json.body.prenom || $json.prenom || '' }}", "type": "string" },
+            { "id": "a3", "name": "nom", "value": "={{ $json.body.nom || $json.nom || '' }}", "type": "string" },
+            { "id": "a4", "name": "email", "value": "={{ $json.body.email || $json.email || '' }}", "type": "string" },
+            { "id": "a5", "name": "telephone", "value": "={{ $json.body.telephone || $json.telephone || '' }}", "type": "string" },
+            { "id": "a6", "name": "type_logement", "value": "={{ $json.body.type_logement || $json.type_logement || '' }}", "type": "string" },
+            { "id": "a7", "name": "projet", "value": "={{ $json.body.projet || $json.projet || '' }}", "type": "string" },
+            { "id": "a8", "name": "consent_sms", "value": "={{ ($json.body.consent_sms ?? $json.consent_sms) ? 'Oui' : 'Non' }}", "type": "string" },
+            { "id": "a9", "name": "consent_rgpd", "value": "={{ ($json.body.consent_rgpd ?? $json.consent_rgpd) ? 'Oui' : 'Non' }}", "type": "string" },
+            { "id": "a10", "name": "source", "value": "={{ $json.body.source || $json.source || 'site:stayn-stains.fr' }}", "type": "string" },
+            { "id": "a11", "name": "origin", "value": "={{ $json.body._origin || $json._origin || '' }}", "type": "string" },
+            { "id": "a12", "name": "country", "value": "={{ $json.body._country || $json._country || '' }}", "type": "string" },
+            { "id": "a13", "name": "user_agent", "value": "={{ $json.body._ua || $json._ua || '' }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Set · normalize",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 320]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bPoUPCXUDBOv_KlMDvIQmvudI5_yfXUZDUvwFI052nM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Feuille1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.received_at }}",
+            "Prénom": "={{ $json.prenom }}",
+            "Nom": "={{ $json.nom }}",
+            "Email": "={{ $json.email }}",
+            "Téléphone": "={{ $json.telephone }}",
+            "Type de logement": "={{ $json.type_logement }}",
+            "Projet": "={{ $json.projet }}",
+            "Consent SMS": "={{ $json.consent_sms }}",
+            "Consent RGPD": "={{ $json.consent_rgpd }}",
+            "Source": "={{ $json.source }}",
+            "Origin": "={{ $json.origin }}",
+            "Pays": "={{ $json.country }}",
+            "User-Agent": "={{ $json.user_agent }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "3",
+      "name": "Google Sheets · append",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [780, 200],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REMPLACER_PAR_TON_CRED_ID",
+          "name": "Google Sheets account (jmg958)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jmg@958.fr,contact@ozimmo.fr",
+        "subject": "=[Stay'n] Nouveau contact · {{ $json.prenom }} {{ $json.nom }} — {{ $json.type_logement || 'Indifférent' }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: -apple-system, Segoe UI, Roboto, sans-serif; color:#15171A; max-width:560px; line-height:1.55;\">\n  <div style=\"background:#1E3A5F; color:#F8F6F1; padding:18px 22px; border-radius:4px 4px 0 0;\">\n    <div style=\"font-family:Georgia,serif; font-size:22px; font-weight:600; letter-spacing:-0.01em;\">Stay'n &middot; Nouveau lead</div>\n    <div style=\"font-size:12px; opacity:0.85; margin-top:4px;\">Reçu le {{ $json.received_at }}</div>\n  </div>\n  <div style=\"border:1px solid #E2DED2; border-top:0; padding:22px; border-radius:0 0 4px 4px; background:#FFFFFF;\">\n    <table style=\"width:100%; border-collapse:collapse; font-size:14px;\">\n      <tr><td style=\"padding:6px 0; color:#797B80; width:140px;\">Prénom</td><td style=\"padding:6px 0; color:#15171A; font-weight:500;\">{{ $json.prenom }}</td></tr>\n      <tr><td style=\"padding:6px 0; color:#797B80;\">Nom</td><td style=\"padding:6px 0; color:#15171A; font-weight:500;\">{{ $json.nom }}</td></tr>\n      <tr><td style=\"padding:6px 0; color:#797B80;\">Email</td><td style=\"padding:6px 0;\"><a href=\"mailto:{{ $json.email }}\" style=\"color:#1E3A5F;\">{{ $json.email }}</a></td></tr>\n      <tr><td style=\"padding:6px 0; color:#797B80;\">Téléphone</td><td style=\"padding:6px 0;\"><a href=\"tel:{{ $json.telephone }}\" style=\"color:#1E3A5F;\">{{ $json.telephone }}</a></td></tr>\n      <tr><td style=\"padding:6px 0; color:#797B80;\">Type souhaité</td><td style=\"padding:6px 0; color:#15171A;\">{{ $json.type_logement || '— non précisé —' }}</td></tr>\n      <tr><td style=\"padding:12px 0 6px; color:#797B80; vertical-align:top;\">Projet</td><td style=\"padding:12px 0 6px; color:#3D3F44;\">{{ $json.projet || '—' }}</td></tr>\n    </table>\n    <hr style=\"border:0; border-top:1px solid #E2DED2; margin:16px 0;\" />\n    <div style=\"font-size:12px; color:#797B80;\">\n      Consent SMS : <strong>{{ $json.consent_sms }}</strong> &middot;\n      Consent RGPD : <strong>{{ $json.consent_rgpd }}</strong><br/>\n      Source : {{ $json.source }} &middot; Pays : {{ $json.country || 'n/a' }}\n    </div>\n  </div>\n  <div style=\"font-size:11px; color:#9C9C92; margin-top:12px; text-align:center;\">Propulsé par 9·58 &middot; stayn-stains.fr</div>\n</div>",
+        "options": {
+          "replyTo": "={{ $json.email }}"
+        }
+      },
+      "id": "4",
+      "name": "Gmail · notify",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [780, 440],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REMPLACER_PAR_TON_CRED_ID",
+          "name": "Gmail jmg@958.fr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "cache-control", "value": "no-store" }
+            ]
+          }
+        }
+      },
+      "id": "5",
+      "name": "Respond · 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1080, 320]
+    }
+  ],
+  "connections": {
+    "Webhook · stayn-stains-lead": {
+      "main": [[{ "node": "Set · normalize", "type": "main", "index": 0 }]]
+    },
+    "Set · normalize": {
+      "main": [[
+        { "node": "Google Sheets · append", "type": "main", "index": 0 },
+        { "node": "Gmail · notify", "type": "main", "index": 0 }
+      ]]
+    },
+    "Google Sheets · append": {
+      "main": [[{ "node": "Respond · 200 OK", "type": "main", "index": 0 }]]
+    },
+    "Gmail · notify": {
+      "main": [[{ "node": "Respond · 200 OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionId": "1",
+  "tags": [{ "name": "stayn-stains" }, { "name": "client:cdlink" }]
+}

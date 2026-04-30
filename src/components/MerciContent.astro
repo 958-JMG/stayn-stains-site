@@ -1,0 +1,115 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props { lang?: Locale; }
+const { lang = DEFAULT_LOCALE } = Astro.props;
+const s = t(lang);
+
+const homeHref = lang === DEFAULT_LOCALE ? '/' : `/${lang}/`;
+const leadHtml = s.merci.lead_body.replace('{x}', `<strong>${s.merci.lead_strong_24h}</strong>`);
+---
+
+<section class="merci">
+  <div class="container is-narrow">
+    <div class="merci-card reveal is-visible">
+      <div class="merci-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+
+      <span class="eyebrow">{s.merci.eyebrow}</span>
+      <h1>{s.merci.h1}</h1>
+      <p class="lead" set:html={leadHtml}></p>
+
+      <div class="merci-grid">
+        <div class="merci-block">
+          <h2>{s.merci.block1_h}</h2>
+          <p>{s.merci.block1_p}</p>
+          <a href="tel:+33763277878" class="btn btn--primary btn--lg">
+            <span>07 63 27 78 78</span>
+          </a>
+        </div>
+        <div class="merci-block">
+          <h2>{s.merci.block2_h}</h2>
+          <p>{s.merci.block2_p}</p>
+          <a
+            href="https://maps.google.com/?q=7-14+avenue+Marcel+Cachin+93240+Stains"
+            class="link-arrow"
+            target="_blank"
+            rel="noopener"
+          >
+            {s.merci.block2_link} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
+      <a href={homeHref} class="merci-back">{s.merci.back}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .merci {
+    padding-block: var(--s-9) var(--s-8);
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+  .merci-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: clamp(1.5rem, 4vw, 3.5rem);
+    text-align: center;
+    box-shadow: 0 18px 56px -28px rgba(21, 23, 26, 0.18);
+  }
+  .merci-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto var(--s-4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #FFFFFF;
+    border-radius: 50%;
+  }
+  .merci-icon svg { width: 28px; height: 28px; }
+  .merci-card .eyebrow { margin-bottom: var(--s-3); }
+  .merci-card h1 { font-size: var(--step-5); margin-bottom: var(--s-4); }
+  .merci-card .lead { margin: 0 auto var(--s-6); max-width: 50ch; }
+
+  .merci-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+    text-align: start;
+    padding-block: var(--s-4);
+    border-block: 1px solid var(--line);
+    margin-bottom: var(--s-5);
+  }
+  .merci-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-3);
+  }
+  .merci-block h2 { font-size: var(--step-3); color: var(--ink); }
+  .merci-block p { color: var(--ink-2); font-size: var(--step-0); }
+  .merci-back {
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    color: var(--ink-3);
+    letter-spacing: var(--tr-wide);
+    display: inline-block;
+  }
+  .merci-back:hover { color: var(--accent); }
+
+  @media (min-width: 720px) {
+    .merci { padding-block: var(--s-10) var(--s-9); }
+    .merci-card h1 { font-size: var(--step-6); }
+    .merci-grid { grid-template-columns: 1fr 1fr; gap: var(--s-5); padding-block: var(--s-5); }
+    .merci-block { padding: var(--s-4); }
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import NotFoundContent from '../components/NotFoundContent.astro';
+import { t } from '../i18n/strings';
+const lang = 'fr' as const;
+const s = t(lang);
+---
+
+<Base title={s.meta.title_404} description={s.meta.desc_404} lang={lang} noindex={true}>
+  <NotFoundContent lang={lang} />
+</Base>

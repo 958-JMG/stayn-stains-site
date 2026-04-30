@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import { t } from '../../i18n/strings';
+const lang = 'ar' as const;
+const s = t(lang);
+---
+
+<Base title="الإشعار القانوني" description="الإشعار القانوني لموقع stayn-stains.fr" lang={lang}>
+  <article class="legal-page">
+    <div class="container is-default">
+      <div class="legal-disclaimer" role="note">
+        <strong>{s.legal_disclaimer.h}</strong>
+        <p>{s.legal_disclaimer.body}</p>
+        <p class="legal-disclaimer-link">
+          <a href="/mentions-legales">← الاطّلاع على النسخة الفرنسيّة</a>
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal-page { padding-block: var(--s-9); min-height: 60vh; }
+  .legal-disclaimer {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-inline-start: 4px solid var(--accent);
+    padding: var(--s-5);
+    border-radius: 4px;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+  .legal-disclaimer strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    color: var(--ink);
+    margin-bottom: var(--s-3);
+  }
+  .legal-disclaimer p { color: var(--ink-2); margin-bottom: var(--s-3); }
+  .legal-disclaimer-link a {
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    color: var(--accent);
+    border-bottom: 1px solid currentColor;
+  }
+</style>
