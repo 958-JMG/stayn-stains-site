@@ -80,20 +80,22 @@ async function makeOgImage() {
   console.log('✓ og-image.jpg (1200x630)');
 }
 
-// PNG dédié pour le marker Google Static Maps — logo cropé, fond transparent.
-// Limite empirique Google Static Maps (test 2026-04-30) : marker accepté
-// jusqu'à ~96×96 si propre (sans chunks iCCP/eXIf/pHYs lourds), 64×64 sûr
-// avec n'importe quel chunk. 128×128 systématiquement rejeté → fallback pin
-// rouge. On reste à 96×96 (compromis netteté/acceptation) sans withMetadata
-// (= aucune metadata copiée depuis la source).
+// PNG dédié pour le marker Google Static Maps — étoile seule, fond transparent.
+// Limite empirique Google Static Maps (tests 2026-04-30) : 64×64 = sûr,
+// 96×96 = rejeté, 128×128 = rejeté → fallback pin rouge. On reste donc à
+// 64×64. Pour ne pas être pixelisé à cette taille on extrait UNIQUEMENT
+// l'étoile (sans le wordmark "stay'n" qui devient illisible à 64px) depuis
+// le logo source 3544×3544. Crop carré centré sur l'étoile (qui occupe la
+// moitié haute du logo source).
 async function makeLogoMarker() {
   const out = resolve(root, 'public/logo-marker.png');
   await sharp(logoSrc)
-    .resize({ width: 96, height: 96, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .extract({ left: 850, top: 100, width: 1850, height: 1850 })
+    .resize({ width: 64, height: 64, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png({ compressionLevel: 9, palette: false })
     .toFile(out);
 
-  console.log('✓ logo-marker.png (96x96, transparent, no metadata)');
+  console.log('✓ logo-marker.png (64x64, étoile seule, transparent)');
 }
 
 async function main() {

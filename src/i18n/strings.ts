@@ -483,7 +483,7 @@ const fr: Strings = {
     h1: "Merci, votre demande est bien reçue.",
     lead_strong_24h: "24 heures ouvrées",
     lead_body:
-      "Un conseiller Stay'n vous recontacte sous {x} au numéro que vous avez indiqué, avec la brochure complète, les plans des appartements et un point sur les conditions TVA 5,5 % et PTZ.",
+      "Un conseiller Stay'n vous recontacte sous {x} au numéro que vous avez indiqué. Il vous fera parvenir la brochure complète, les plans des appartements, et fera le point sur les conditions TVA 5,5 % et PTZ.",
     block1_h: "Besoin de nous parler tout de suite ?",
     block1_p: "L'espace de vente est joignable du lundi au samedi.",
     block2_h: "Préparer votre venue",
@@ -742,7 +742,7 @@ const en: Strings = {
     h1: "Thank you, your request is in.",
     lead_strong_24h: "24 business hours",
     lead_body:
-      "A Stay'n consultant will call you within {x} at the number you provided, with the full brochure, floor plans and a walk-through of the 5.5% VAT and PTZ conditions.",
+      "A Stay'n consultant will call you within {x} at the number you provided. They will also send you the full brochure, floor plans, and walk you through the 5.5% VAT and PTZ conditions.",
     block1_h: "Need to talk right now?",
     block1_p: "The sales office is open Monday through Saturday.",
     block2_h: "Plan your visit",
@@ -1002,7 +1002,7 @@ const ar: Strings = {
     h1: "شكراً، تمّ استلام طلبكم.",
     lead_strong_24h: "24 ساعة عمل",
     lead_body:
-      "سيتّصل بكم مستشار Stay'n خلال {x} على الرقم الذي قدّمتموه، مع الكتيّب الكامل ومخطّطات الشقق ونظرة عامة على شروط ضريبة 5.5٪ وقرض PTZ.",
+      "سيتّصل بكم مستشار Stay'n خلال {x} على الرقم الذي قدّمتموه. وسيرسل لكم أيضاً الكتيّب الكامل ومخطّطات الشقق، ويقدّم لكم نظرة عامة على شروط ضريبة 5.5٪ وقرض PTZ.",
     block1_h: "تريدون التحدّث الآن؟",
     block1_p: "مكتب المبيعات متاح من الإثنين إلى السبت.",
     block2_h: "خطّطوا لزيارتكم",

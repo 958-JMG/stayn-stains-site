@@ -95,7 +95,7 @@ const markersByCat = pois.reduce<Record<string, POI[]>>((acc, p) => {
 // identique. Bumper la version dès qu'on change le PNG.
 const MARKER_HOST = import.meta.env.PUBLIC_MARKER_BASE_URL ||
   'https://stayn-stains-site.jmg-2d3.workers.dev';
-const MARKER_VERSION = '4';
+const MARKER_VERSION = '5';
 const saleIconUrl = `${MARKER_HOST}/logo-marker.png?v=${MARKER_VERSION}`;
 
 const markerParams = Object.entries(markersByCat)
