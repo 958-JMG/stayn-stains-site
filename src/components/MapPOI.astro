@@ -88,9 +88,15 @@ const markersByCat = pois.reduce<Record<string, POI[]>>((acc, p) => {
 // côté serveur, donc l'URL doit être publiquement accessible.
 // On hardcode le hostname Cloudflare Workers (toujours accessible
 // même après bascule DNS sur stayn-stains.fr — les deux URLs cohabitent).
+//
+// Le suffixe ?v=N est CRITIQUE : Google Static Maps cache agressivement
+// le fetch du custom icon (incluant les rejets). Si une version a été
+// rejetée une fois, même un PNG corrigé est ignoré tant que l'URL est
+// identique. Bumper la version dès qu'on change le PNG.
 const MARKER_HOST = import.meta.env.PUBLIC_MARKER_BASE_URL ||
   'https://stayn-stains-site.jmg-2d3.workers.dev';
-const saleIconUrl = `${MARKER_HOST}/logo-marker.png`;
+const MARKER_VERSION = '2';
+const saleIconUrl = `${MARKER_HOST}/logo-marker.png?v=${MARKER_VERSION}`;
 
 const markerParams = Object.entries(markersByCat)
   .map(([cat, items]) => {
