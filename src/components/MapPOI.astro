@@ -65,8 +65,12 @@ const CAT_COLORS: Record<Cat, string> = {
 };
 
 // Construction de l'URL Google Static Maps — image fixe à charger côté client.
-// La clé doit être restreinte par HTTP referrer côté Google Cloud Console.
-const apiKey = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || '';
+// La clé est publique mais restreinte par HTTP referrer côté Google Cloud Console.
+// Whitelist requise (Google Cloud Console → APIs & Services → Credentials) :
+//   *.stayn-stains.fr/*, *.pages.dev/*, *.workers.dev/*, localhost:4321/*
+// Cette clé est en dur ici (pas un secret) ; la var d'env la surcharge si présente.
+const MAPS_KEY_DEFAULT = 'AIzaSyBBmTUkFXvCLMZqfCk26o6axikt98SY058';
+const apiKey = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || MAPS_KEY_DEFAULT;
 const hasKey = apiKey.length > 0;
 
 function gmapsHexColor(hex: string): string {
