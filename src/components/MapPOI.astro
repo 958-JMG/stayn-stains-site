@@ -69,36 +69,63 @@ const CAT_COLORS: Record<Cat, string> = {
 // Whitelist requise (Google Cloud Console → APIs & Services → Credentials) :
 //   *.stayn-stains.fr/*, *.pages.dev/*, *.workers.dev/*, localhost:4321/*
 // Cette clé est en dur ici (pas un secret) ; la var d'env la surcharge si présente.
-const MAPS_KEY_DEFAULT = 'AIzaSyBBXe7yj5q0CYXPeByk8YiRakFso4HAPe4';
+const MAPS_KEY_DEFAULT = 'AIzaSyBBmTUkFXvCLMZqfCk26o6axikt98SY058';
 const apiKey = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || MAPS_KEY_DEFAULT;
 const hasKey = apiKey.length > 0;
 
-// Marker logo Stay'n — étoile seule (sans wordmark), 64×64. Sert aussi
-// en fallback iframe si la JS API échoue.
+function gmapsHexColor(hex: string): string {
+  return '0x' + hex.replace('#', '');
+}
+
+// Group markers by category to reduce URL length
+const markersByCat = pois.reduce<Record<string, POI[]>>((acc, p) => {
+  if (!acc[p.cat]) acc[p.cat] = [];
+  acc[p.cat].push(p);
+  return acc;
+}, {});
+
+// Logo Stay'n en marker custom — Google Static Maps fetche l'image
+// côté serveur, donc l'URL doit être publiquement accessible.
+// On hardcode le hostname Cloudflare Workers (toujours accessible
+// même après bascule DNS sur stayn-stains.fr — les deux URLs cohabitent).
+//
+// Le suffixe ?v=N est CRITIQUE : Google Static Maps cache agressivement
+// le fetch du custom icon (incluant les rejets). Si une version a été
+// rejetée une fois, même un PNG corrigé est ignoré tant que l'URL est
+// identique. Bumper la version dès qu'on change le PNG.
 const MARKER_HOST = import.meta.env.PUBLIC_MARKER_BASE_URL ||
   'https://stayn-stains-site.jmg-2d3.workers.dev';
 const MARKER_VERSION = '5';
 const saleIconUrl = `${MARKER_HOST}/logo-marker.png?v=${MARKER_VERSION}`;
 
+const markerParams = Object.entries(markersByCat)
+  .map(([cat, items]) => {
+    const points = items.map((p) => `${p.lat},${p.lng}`).join('|');
+    if (cat === 'sale') {
+      return `markers=icon:${encodeURIComponent(saleIconUrl)}|anchor:center|${points}`;
+    }
+    const color = gmapsHexColor(CAT_COLORS[cat as Cat]);
+    return `markers=color:${color}|size:mid|${points}`;
+  })
+  .join('&');
+
+const mapStyleParams = [
+  'style=feature:poi|visibility:off',
+  'style=feature:transit.station|visibility:off',
+  'style=feature:road|element:labels.icon|visibility:off',
+  'style=feature:administrative|element:labels.icon|visibility:off',
+  'style=feature:water|color:0xC7D7E2',
+  'style=feature:landscape|color:0xF5F1E8',
+  'style=feature:road|element:geometry|color:0xFFFFFF',
+  'style=feature:road|element:geometry.stroke|color:0xE5DACE',
+  'style=feature:road.highway|element:geometry|color:0xF0E2C8',
+].join('&');
+
 const mapLang = lang === 'ar' ? 'ar' : (lang === 'en' ? 'en' : 'fr');
 
-// Données sérialisées pour le client : POIs + couleurs + URL marker
-// (transmises au script init via data-attribute JSON).
-const mapData = {
-  center,
-  zoom: 15,
-  language: mapLang,
-  saleIconUrl,
-  catColors: CAT_COLORS,
-  pois: pois.map((p) => ({
-    id: p.id,
-    cat: p.cat,
-    label: p.label,
-    sub: p.sub,
-    lat: p.lat,
-    lng: p.lng,
-  })),
-};
+const mapUrl = hasKey
+  ? `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=15&size=760x520&scale=2&maptype=roadmap&language=${mapLang}&${markerParams}&${mapStyleParams}&key=${apiKey}`
+  : null;
 
 // Ouvre l'itinéraire piéton depuis l'espace de vente Stay'n vers le POI
 function dirUrl(p: POI): string {
@@ -128,22 +155,18 @@ const legend: Array<{ cat: Cat; label: string }> = [
 ---
 
 <div class="map-poi" data-map-poi>
-  <!-- ========== CARTE INTERACTIVE (Maps JS API) ========== -->
+  <!-- ========== CARTE FIXE ========== -->
   <figure class="map-figure">
-    {hasKey ? (
-      <div
-        class="map-interactive"
-        data-stayn-map
-        data-api-key={apiKey}
-        data-map-config={JSON.stringify(mapData)}
-        role="region"
-        aria-label={s.localisation.map_region_aria}
-      >
-        <!-- Placeholder visible avant chargement de l'API -->
-        <div class="map-placeholder" aria-hidden="true">
-          <span class="map-placeholder-spinner"></span>
-        </div>
-      </div>
+    {mapUrl ? (
+      <img
+        src={mapUrl}
+        alt={s.localisation.map_region_aria}
+        width="760"
+        height="520"
+        class="map-img"
+        loading="lazy"
+        decoding="async"
+      />
     ) : (
       <div class="map-fallback" role="region" aria-label={s.localisation.map_region_aria}>
         <iframe
@@ -259,7 +282,17 @@ const legend: Array<{ cat: Cat; label: string }> = [
     flex-direction: column;
     gap: var(--s-3);
   }
-  .map-interactive,
+  .map-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    max-height: 70vh;
+    object-fit: cover;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 12px 36px -24px rgba(21, 23, 26, 0.18);
+  }
   .map-fallback {
     width: 100%;
     aspect-ratio: 4 / 3;
@@ -268,56 +301,22 @@ const legend: Array<{ cat: Cat; label: string }> = [
     border: 1px solid var(--line);
     border-radius: 6px;
     overflow: hidden;
-    position: relative;
-  }
-  .map-interactive {
-    box-shadow: 0 12px 36px -24px rgba(21, 23, 26, 0.18);
   }
   @media (min-width: 720px) {
-    .map-interactive,
+    .map-img,
     .map-fallback {
       aspect-ratio: 16 / 9;
       max-height: 460px;
     }
   }
   @media (min-width: 1100px) {
-    .map-interactive,
+    .map-img,
     .map-fallback {
       aspect-ratio: 21 / 9;
       max-height: 480px;
     }
   }
   .map-fallback iframe { width: 100%; height: 100%; display: block; }
-  .map-interactive > div:not(.map-placeholder) { width: 100%; height: 100%; }
-
-  /* Placeholder spinner avant chargement Maps JS API */
-  .map-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-3);
-    transition: opacity 320ms var(--ease, ease);
-    pointer-events: none;
-  }
-  .map-interactive.is-loaded .map-placeholder {
-    opacity: 0;
-  }
-  .map-placeholder-spinner {
-    width: 28px;
-    height: 28px;
-    border: 2px solid var(--line);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: map-spin 720ms linear infinite;
-  }
-  @keyframes map-spin {
-    to { transform: rotate(360deg); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .map-placeholder-spinner { animation: none; }
-  }
 
   .map-legend {
     display: flex;
@@ -487,211 +486,3 @@ const legend: Array<{ cat: Cat; label: string }> = [
     }
   }
 </style>
-
-<script>
-  // ============================================================
-  // Initialisation Google Maps JS API — lazy-loaded au scroll
-  // (perf + coût : ne charge que si l'utilisateur arrive sur la map).
-  // ============================================================
-  type StaynPOI = {
-    id: string;
-    cat: string;
-    label: string;
-    sub: string;
-    lat: number;
-    lng: number;
-  };
-  type StaynMapConfig = {
-    center: { lat: number; lng: number };
-    zoom: number;
-    language: string;
-    saleIconUrl: string;
-    catColors: Record<string, string>;
-    pois: StaynPOI[];
-  };
-
-  const STYLES: any[] = [
-    { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-    { featureType: 'transit.station', stylers: [{ visibility: 'off' }] },
-    { featureType: 'road', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-    { featureType: 'administrative', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-    { featureType: 'water', stylers: [{ color: '#C7D7E2' }] },
-    { featureType: 'landscape', stylers: [{ color: '#F5F1E8' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
-    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#E5DACE' }] },
-    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#F0E2C8' }] },
-  ];
-
-  let apiPromise: Promise<any> | null = null;
-
-  // Global callback Google appelle si la clé est rejetée (referrer non
-  // whitelisté, Maps JS API non activée, billing désactivé). Sans ce
-  // handler, la map reste un bloc vide sans erreur visible.
-  (window as any).gmp_authFailure = () => {
-    console.error('[stayn-map] gmp_authFailure — clé refusée par Google');
-    document.querySelectorAll<HTMLElement>('[data-stayn-map]').forEach((el) => {
-      el.innerHTML = `<iframe
-        src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
-        width="100%" height="100%" style="border:0;" loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Stay'n"></iframe>`;
-    });
-  };
-
-  function loadMapsApi(apiKey: string, language: string): Promise<any> {
-    if (apiPromise) return apiPromise;
-    if (typeof window !== 'undefined' && (window as any).google?.maps) {
-      apiPromise = Promise.resolve((window as any).google);
-      return apiPromise;
-    }
-    apiPromise = new Promise((resolve, reject) => {
-      const cbName = '__staynInitMap__' + Math.random().toString(36).slice(2, 8);
-      (window as any)[cbName] = () => {
-        delete (window as any)[cbName];
-        resolve((window as any).google);
-      };
-      const script = document.createElement('script');
-      const params = new URLSearchParams({
-        key: apiKey,
-        language,
-        callback: cbName,
-        v: 'weekly',
-      });
-      script.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
-      script.async = true;
-      script.defer = true;
-      script.onerror = () => {
-        delete (window as any)[cbName];
-        apiPromise = null;
-        reject(new Error('Maps JS API failed to load'));
-      };
-      document.head.appendChild(script);
-    });
-    return apiPromise;
-  }
-
-  async function initStaynMap(el: HTMLElement) {
-    const apiKey = el.dataset.apiKey;
-    const configRaw = el.dataset.mapConfig;
-    if (!apiKey || !configRaw) return;
-    let cfg: StaynMapConfig;
-    try {
-      cfg = JSON.parse(configRaw);
-    } catch {
-      return;
-    }
-
-    let g: any;
-    try {
-      g = await loadMapsApi(apiKey, cfg.language);
-    } catch (err) {
-      console.error('[stayn-map]', err);
-      // Fallback : remplacer par iframe Google Maps standard
-      el.innerHTML = `<iframe
-        src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
-        width="100%" height="100%" style="border:0;" loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Stay'n"></iframe>`;
-      return;
-    }
-
-    try {
-    const mapDiv = document.createElement('div');
-    el.appendChild(mapDiv);
-
-    const map = new g.maps.Map(mapDiv, {
-      center: cfg.center,
-      zoom: cfg.zoom,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: true,
-      zoomControl: true,
-      gestureHandling: 'cooperative',
-      styles: STYLES,
-      backgroundColor: '#F5F1E8',
-    });
-
-    // Marker étoile Stay'n (logo PNG custom)
-    new g.maps.Marker({
-      position: cfg.center,
-      map,
-      icon: {
-        url: cfg.saleIconUrl,
-        scaledSize: new g.maps.Size(56, 56),
-        anchor: new g.maps.Point(28, 28),
-      },
-      title: "Stay'n — Espace de vente",
-      zIndex: 1000,
-    });
-
-    // Markers POI colorés par catégorie (cercles ronds)
-    const info = new g.maps.InfoWindow({
-      pixelOffset: new g.maps.Size(0, -2),
-    });
-
-    cfg.pois
-      .filter((p) => p.cat !== 'sale')
-      .forEach((poi) => {
-        const color = cfg.catColors[poi.cat] || '#812933';
-        const marker = new g.maps.Marker({
-          position: { lat: poi.lat, lng: poi.lng },
-          map,
-          icon: {
-            path: g.maps.SymbolPath.CIRCLE,
-            fillColor: color,
-            fillOpacity: 1,
-            strokeColor: '#FFFFFF',
-            strokeWeight: 2,
-            scale: 8,
-          },
-          title: poi.label,
-        });
-        marker.addListener('click', () => {
-          const safeLabel = poi.label.replace(/[<>"&]/g, (c) =>
-            ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', '&': '&amp;' })[c] || c
-          );
-          const safeSub = poi.sub.replace(/[<>"&]/g, (c) =>
-            ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', '&': '&amp;' })[c] || c
-          );
-          info.setContent(
-            `<div style="font-family:system-ui,sans-serif;padding:2px 4px;max-width:220px;">
-              <strong style="color:#2E1A1C;font-size:14px;">${safeLabel}</strong>
-              <div style="color:#8A6E6F;font-size:12px;margin-top:2px;">${safeSub}</div>
-            </div>`
-          );
-          info.open({ anchor: marker, map });
-        });
-      });
-
-    el.classList.add('is-loaded');
-    } catch (err) {
-      console.error('[stayn-map] init failed', err);
-      el.innerHTML = `<iframe
-        src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
-        width="100%" height="100%" style="border:0;" loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Stay'n"></iframe>`;
-    }
-  }
-
-  function bootStaynMaps() {
-    document.querySelectorAll<HTMLElement>('[data-stayn-map]:not([data-stayn-bound])').forEach((el) => {
-      el.dataset.staynBound = 'true';
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              observer.disconnect();
-              void initStaynMap(el);
-            }
-          });
-        },
-        { rootMargin: '200px 0px' }
-      );
-      observer.observe(el);
-    });
-  }
-
-  bootStaynMaps();
-  document.addEventListener('astro:page-load', bootStaynMaps);
-</script>
