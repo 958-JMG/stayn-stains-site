@@ -81,19 +81,20 @@ async function makeOgImage() {
 }
 
 // PNG dédié pour le marker Google Static Maps — logo cropé, fond transparent.
-// 64×64 max + 72 DPI + sans iCC profile + palette force-removed : Google Static
-// Maps rejette silencieusement les icons trop "lourds" (300 DPI, ICC, > 64px) et
-// fallback sur le pin rouge par défaut. Cf. test 2026-04-30 : version 96×96/300dpi
-// rejetée, 64×64/72dpi acceptée.
+// 128×128 + 72 DPI + sans iCC profile + RGBA pur : Google Static Maps rejette
+// silencieusement les icons "lourds" (chunks iCCP/eXIf/pHYs) MAIS pas les icons
+// plus grands tant qu'ils restent en RGBA propre. 128×128 donne un rendu net
+// après upscale CSS (carte 1280px Google → ~1900px écran, ratio ~1.5).
+// Cf. tests 2026-04-30.
 async function makeLogoMarker() {
   const out = resolve(root, 'public/logo-marker.png');
   await sharp(logoSrc)
-    .resize({ width: 64, height: 64, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .resize({ width: 128, height: 128, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .withMetadata({ density: 72 })
     .png({ compressionLevel: 9, palette: false })
     .toFile(out);
 
-  console.log('✓ logo-marker.png (64x64, transparent, 72 DPI)');
+  console.log('✓ logo-marker.png (128x128, transparent, 72 DPI)');
 }
 
 async function main() {
