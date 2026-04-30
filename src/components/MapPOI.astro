@@ -504,24 +504,36 @@ const legend: Array<{ cat: Cat; label: string }> = [
       leafletPromise = Promise.resolve((window as any).L);
       return leafletPromise;
     }
-    if (!document.querySelector(`link[href="${LEAFLET_CSS}"]`)) {
+    // CSS d'abord — attendre son load avant d'init la map (sinon le
+    // .leaflet-container n'a pas ses styles critiques et la map ne s'affiche pas)
+    const cssReady = new Promise<void>((resolve) => {
+      const existing = document.querySelector(`link[href="${LEAFLET_CSS}"]`) as HTMLLinkElement | null;
+      if (existing) {
+        if ((existing as any).sheet) resolve();
+        else existing.addEventListener('load', () => resolve(), { once: true });
+        return;
+      }
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = LEAFLET_CSS;
+      link.addEventListener('load', () => resolve(), { once: true });
+      link.addEventListener('error', () => resolve(), { once: true }); // best-effort, init quand même
       document.head.appendChild(link);
-    }
-    leafletPromise = new Promise((resolve, reject) => {
+    });
+
+    const jsReady = new Promise<any>((resolve, reject) => {
       const script = document.createElement('script');
       script.src = LEAFLET_JS;
       script.async = true;
-      script.defer = true;
       script.onload = () => resolve((window as any).L);
       script.onerror = () => {
         leafletPromise = null;
-        reject(new Error('Leaflet failed to load'));
+        reject(new Error('Leaflet JS failed to load'));
       };
       document.head.appendChild(script);
     });
+
+    leafletPromise = Promise.all([cssReady, jsReady]).then(([, L]) => L);
     return leafletPromise;
   }
 
@@ -555,7 +567,11 @@ const legend: Array<{ cat: Cat; label: string }> = [
 
     try {
       const mapDiv = document.createElement('div');
+      mapDiv.style.width = '100%';
+      mapDiv.style.height = '100%';
+      mapDiv.style.minHeight = '300px';
       el.appendChild(mapDiv);
+      console.log('[stayn-map] Leaflet ready, initializing on', mapDiv);
 
       const map = L.map(mapDiv, {
         center: [cfg.center.lat, cfg.center.lng],
