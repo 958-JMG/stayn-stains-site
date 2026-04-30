@@ -524,6 +524,20 @@ const legend: Array<{ cat: Cat; label: string }> = [
 
   let apiPromise: Promise<any> | null = null;
 
+  // Global callback Google appelle si la clé est rejetée (referrer non
+  // whitelisté, Maps JS API non activée, billing désactivé). Sans ce
+  // handler, la map reste un bloc vide sans erreur visible.
+  (window as any).gmp_authFailure = () => {
+    console.error('[stayn-map] gmp_authFailure — clé refusée par Google');
+    document.querySelectorAll<HTMLElement>('[data-stayn-map]').forEach((el) => {
+      el.innerHTML = `<iframe
+        src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
+        width="100%" height="100%" style="border:0;" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Stay'n"></iframe>`;
+    });
+  };
+
   function loadMapsApi(apiKey: string, language: string): Promise<any> {
     if (apiPromise) return apiPromise;
     if (typeof window !== 'undefined' && (window as any).google?.maps) {
@@ -540,7 +554,6 @@ const legend: Array<{ cat: Cat; label: string }> = [
       const params = new URLSearchParams({
         key: apiKey,
         language,
-        loading: 'async',
         callback: cbName,
         v: 'weekly',
       });
@@ -582,6 +595,7 @@ const legend: Array<{ cat: Cat; label: string }> = [
       return;
     }
 
+    try {
     const mapDiv = document.createElement('div');
     el.appendChild(mapDiv);
 
@@ -650,6 +664,14 @@ const legend: Array<{ cat: Cat; label: string }> = [
       });
 
     el.classList.add('is-loaded');
+    } catch (err) {
+      console.error('[stayn-map] init failed', err);
+      el.innerHTML = `<iframe
+        src="https://www.google.com/maps?q=7-11+avenue+Marcel+Cachin+93240+Stains&output=embed&z=15"
+        width="100%" height="100%" style="border:0;" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Stay'n"></iframe>`;
+    }
   }
 
   function bootStaynMaps() {
