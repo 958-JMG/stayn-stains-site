@@ -606,7 +606,7 @@ const legend: Array<{ cat: Cat; label: string }> = [
       streetViewControl: false,
       fullscreenControl: true,
       zoomControl: true,
-      gestureHandling: 'cooperative',
+      gestureHandling: 'greedy',
       styles: STYLES,
       backgroundColor: '#F5F1E8',
     });
@@ -617,8 +617,8 @@ const legend: Array<{ cat: Cat; label: string }> = [
       map,
       icon: {
         url: cfg.saleIconUrl,
-        scaledSize: new g.maps.Size(56, 56),
-        anchor: new g.maps.Point(28, 28),
+        scaledSize: new g.maps.Size(44, 44),
+        anchor: new g.maps.Point(22, 22),
       },
       title: "Stay'n — Espace de vente",
       zIndex: 1000,
