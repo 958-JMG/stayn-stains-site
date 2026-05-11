@@ -1,0 +1,40 @@
+Objet : [Stay'n] Envoi de la relance commerciale — vendredi 15 mai, 08h30
+
+Bonjour à toutes et à tous,
+
+Pour information, la campagne de relance de l'offre de printemps Stay'n
+(remise jusqu'à −15 000 € + bonus cuisine 4 000 € pour les 5 premiers
+réservataires) sera envoyée à notre base de contacts :
+
+  → Vendredi 15 mai 2026, à 08h30.
+
+Quelques points à anticiper :
+
+• Volume : envoi sur l'intégralité de la base qualifiée (contacts ayant
+  rempli le formulaire du site stayn-stains.fr).
+
+• Retombées attendues dès la matinée : ouvertures, clics sur la page
+  /#offre, et appels entrants au 07 63 27 78 78. Merci à l'équipe
+  commerciale d'être disponible et réactive sur le standard à partir
+  de 09h00.
+
+• Boîte contact@ozimmo.fr à monitorer en continu vendredi et lundi :
+  certaines réponses arriveront en répondant directement à l'email.
+
+• Date butoir de l'offre dans la communication : 15 juin. Tous les
+  contacts qui prennent rendez-vous doivent être traités en priorité,
+  avec un rappel sous 24 heures ouvrées maximum.
+
+• Aperçu de l'email + version texte disponibles dans le repo
+  (deploy/emails/relance-offre-printemps.html). Une preview vous sera
+  envoyée jeudi en fin de journée pour validation finale.
+
+Merci d'avance pour votre mobilisation — l'objectif est de signer un
+maximum de réservations avant le 15 juin.
+
+Très bonne semaine,
+
+[Prénom NOM]
+[Fonction]
+CD Link Promotion
+07 63 27 78 78 · contact@ozimmo.fr
