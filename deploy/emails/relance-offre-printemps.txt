@@ -1,0 +1,88 @@
+Sujets A/B testables (objet email)
+====================================
+A. Stay'n · −15 000 € sur votre appartement à Stains (et 4 000 € de cuisine pour les 5 premiers)
+B. {{prenom}}, et si on relançait votre projet d'achat ? −15 000 € jusqu'au 15 juin
+C. 58 logements à 15 min de Paris — l'offre de printemps repart (et part vite)
+
+Préheader
+=========
+Jusqu'à −15 000 € de remise immédiate + 4 000 € de bon cuisine pour les 5 premiers. Jusqu'au 15 juin.
+
+
+-----------------------------------------------------------------
+VERSION TEXTE (plain-text fallback)
+-----------------------------------------------------------------
+
+Bonjour {{prenom}},
+
+Vous nous avez sollicités pour le programme Stay'n à Stains —
+58 logements neufs à 15 minutes de Paris.
+
+On relance aujourd'hui notre OFFRE DE PRINTEMPS, et on voulait
+vous prévenir en priorité.
+
+★ JUSQU'À −15 000 € DE REMISE IMMÉDIATE
+appliquée directement sur le prix TTC, à la signature.
+
+★ ET POUR LES 5 PREMIERS RÉSERVATAIRES
++ 4 000 € de bon d'achat sur votre cuisine équipée.
+(Cumulable avec la remise. Une fois les 5 premiers signés, ce bonus disparaît.)
+
+
+QUELQUES LOTS ENCORE DISPONIBLES
+--------------------------------
+T2 — dès 41 m² —  175 000 €  →  168 000 €
+T3 — dès 60 m² —  198 000 €  →  189 000 €
+T4 — dès 78 m² —  234 560 €  →  223 700 €
+T5 — dès 96 m² —  312 000 €  →  298 000 €
+
+(Prix hors parking, indicatifs, dans la limite des stocks disponibles.)
+
+
+POURQUOI STAY'N RESTE UNE BONNE IDÉE
+------------------------------------
+▸ TVA réduite 5,5 % au lieu de 20 % (sous conditions de ressources)
+▸ Éligible PTZ — Prêt à Taux Zéro
+▸ Norme RE 2020 — isolation renforcée, factures réduites
+▸ Paris en 15 min — RER D, RER B, Métro 13, Tram T11
+▸ Jardin intérieur, balcon ou terrasse, stationnement sécurisé, fibre
+
+
+RÉSERVATION JUSQU'AU 15 JUIN
+Au-delà, les prix repassent à leur grille initiale.
+
+→ Je bloque mon appartement : https://www.stayn-stains.fr/#offre
+→ Ou appelez-nous : 07 63 27 78 78
+
+Pour recevoir la brochure complète avec les plans, répondez
+simplement à ce mail.
+
+À très vite,
+L'équipe Stay'n
+CD Link Promotion
+Espace de vente : 7-14 av. Marcel Cachin, 93240 Stains
+contact@ozimmo.fr · www.stayn-stains.fr
+
+Se désinscrire : {{unsubscribe_url}}
+Mentions légales : https://www.stayn-stains.fr/mentions-legales
+
+
+-----------------------------------------------------------------
+NOTES D'ENVOI
+-----------------------------------------------------------------
+
+1. Remplacer {{prenom}} et {{unsubscribe_url}} par les variables
+   de votre routeur (Brevo, Mailjet, Sarbacane, Mailchimp...).
+
+2. Segmenter la base : envoyer en priorité aux contacts les plus
+   "chauds" (formulaire rempli < 90 jours, ouvert un précédent
+   email, visité la page /#offre).
+
+3. Tester sur Litmus / Email on Acid avant envoi de masse
+   (Outlook, Gmail dark mode, iOS Mail).
+
+4. Heure d'envoi recommandée : mardi-jeudi 10h-11h ou 17h-18h.
+
+5. Prévoir une RELANCE J+5 sur les non-ouvreurs avec le sujet B
+   ou C, et une relance J+10 "dernière chance" centrée sur la
+   date butoir du 15 juin.
