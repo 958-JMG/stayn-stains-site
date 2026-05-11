@@ -75,6 +75,12 @@ Mentions légales : https://www.stayn-stains.fr/mentions-legales
 NOTES D'ENVOI
 -----------------------------------------------------------------
 
+0. IMAGE PERSPECTIVE — actuellement hébergée sur raw.githubusercontent
+   (URL stable tant que la branche existe). Pour la prod, importer
+   public/email-perspective.jpg dans la bibliothèque média de votre
+   routeur (Brevo/Mailjet/Mailchimp) ou déployer le site Cloudflare
+   pour la servir depuis https://www.stayn-stains.fr/email-perspective.jpg
+
 1. Remplacer {{prenom}} et {{unsubscribe_url}} par les variables
    de votre routeur (Brevo, Mailjet, Sarbacane, Mailchimp...).
 
