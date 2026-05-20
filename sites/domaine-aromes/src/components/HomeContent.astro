@@ -17,13 +17,14 @@ interface Props {
 }
 const {
   lang = DEFAULT_LOCALE,
-  deadline = '2026-06-15T23:59:59+02:00',
+  deadline = '2026-05-30T23:59:59+02:00',
 } = Astro.props;
 const s = t(lang);
 
 // Le tout dernier lot disponible — valeurs placeholder à confirmer au bureau de vente.
+// Remise publique : −10 000 €. Remise complémentaire confidentielle (à découvrir au RDV).
 const apparts = [
-  { type: s.apparts.type_t3, prixOld: 298000, prix: 285000, lot: 'B12', save: 13000, surface: 65 },
+  { type: s.apparts.type_t3, prixOld: 295000, prix: 285000, lot: 'B12', save: 10000, surface: 65 },
 ];
 
 const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/mentions-legales`;
@@ -66,9 +67,8 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
 <!-- OFFER -->
 <OfferShowcase
   deadline={deadline}
-  remiseMax={13000}
+  remiseMax={10000}
   reservatairesRestants={1}
-  bonusCuisine={4000}
   lots={apparts}
   lang={lang}
 />

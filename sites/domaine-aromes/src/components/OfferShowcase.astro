@@ -15,7 +15,6 @@ interface Props {
   deadline: string;
   remiseMax: number;
   reservatairesRestants?: number;
-  bonusCuisine?: number;
   lots: Lot[];
   lang?: Locale;
 }
@@ -24,14 +23,12 @@ const {
   deadline,
   remiseMax,
   reservatairesRestants = 5,
-  bonusCuisine = 4000,
   lots,
   lang = DEFAULT_LOCALE,
 } = Astro.props;
 const s = t(lang);
 
 const remiseMaxFmt = formatPrice(remiseMax, lang);
-const bonusFmt = formatPrice(bonusCuisine, lang);
 const deadlineLabel = formatDate(deadline, lang);
 const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang}/mentions-legales#offre`;
 ---
@@ -44,7 +41,7 @@ const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang
         {s.offer.tag}
       </span>
       <h2 class="offer-title">
-        {s.offer.title_prefix} <span class="offer-amount">−{remiseMaxFmt}</span>
+        <span class="offer-amount">{s.offer.title_prefix}</span>
         <span class="offer-or">{s.offer.title_or}</span>
       </h2>
       <p class="offer-lead">{s.offer.lead_body}</p>
@@ -79,20 +76,25 @@ const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang
           ))}
         </ul>
 
-        <!-- BONUS CUISINE -->
+        <!-- BONUS — frais de notaire offerts -->
         <div class="offer-bonus" role="region" aria-label={s.offer.bonus_title}>
-          <img
-            src="/cuisine.png"
-            alt=""
-            width="64"
-            height="64"
-            class="bonus-icon"
-            loading="lazy"
-            aria-hidden="true"
-          />
+          <span class="bonus-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <!-- document avec coin replié -->
+              <path d="M14 8 h28 l10 10 v38 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" />
+              <path d="M42 8 v10 h10" />
+              <!-- lignes texte -->
+              <path d="M20 28 h18" />
+              <path d="M20 36 h24" />
+              <path d="M20 44 h14" />
+              <!-- sceau / cocarde -->
+              <circle cx="46" cy="46" r="8" fill="currentColor" fill-opacity="0.15" />
+              <path d="M46 41 v10 M41 46 h10" />
+            </svg>
+          </span>
           <div class="bonus-content">
             <span class="bonus-tag">{s.offer.bonus_tag}</span>
-            <h3 class="bonus-title">−{bonusFmt} {lang === 'en' ? 'on your kitchen' : 'sur votre cuisine'}</h3>
+            <h3 class="bonus-title">{s.offer.bonus_title}</h3>
             <p class="bonus-body">{s.offer.bonus_body}</p>
             <p class="bonus-subtitle">{s.offer.bonus_subtitle}</p>
           </div>
@@ -336,9 +338,13 @@ const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang
   .bonus-icon {
     width: 64px;
     height: 64px;
-    object-fit: contain;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
   }
+  .bonus-icon svg { width: 100%; height: 100%; }
   .bonus-content {
     display: flex;
     flex-direction: column;
