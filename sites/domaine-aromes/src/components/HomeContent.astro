@@ -21,10 +21,11 @@ const {
 } = Astro.props;
 const s = t(lang);
 
-// Le tout dernier lot disponible — valeurs placeholder à confirmer au bureau de vente.
+// Le tout dernier lot disponible — T4 modulable en T3 selon la configuration.
+// Prix placeholder à confirmer au bureau de vente.
 // Remise publique : −10 000 €. Remise complémentaire confidentielle (à découvrir au RDV).
 const apparts = [
-  { type: s.apparts.type_t3, prixOld: 295000, prix: 285000, lot: 'B12', save: 10000, surface: 65 },
+  { type: 'T3 / T4', prixOld: 345000, prix: 335000, lot: 'B12', save: 10000, surface: 82, modulable: true },
 ];
 
 const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/mentions-legales`;
@@ -156,7 +157,10 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
             <span class="appart-lot">Lot {a.lot}</span>
           </div>
           {a.surface && (
-            <p class="appart-surface">{a.surface} m² · {s.apparts.hors_parking}</p>
+            <p class="appart-surface">
+              ≈ {a.surface} m² · {s.apparts.hors_parking}
+              {a.modulable && <> · <em>{lang === 'en' ? 'modular 3/4-room' : 'modulable 3 ou 4 pièces'}</em></>}
+            </p>
           )}
           <div class="appart-prices">
             <span class="appart-old">{formatPrice(a.prixOld, lang)}</span>
@@ -372,6 +376,11 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
     text-transform: uppercase;
   }
   .appart-surface { color: var(--ink-3); font-size: var(--step-0); }
+  .appart-surface em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 500;
+  }
   .appart-prices {
     display: flex;
     flex-direction: column;

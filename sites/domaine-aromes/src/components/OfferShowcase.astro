@@ -9,6 +9,7 @@ interface Lot {
   prix: number;
   save: number;
   surface?: number;
+  modulable?: boolean;
 }
 
 interface Props {
@@ -58,7 +59,10 @@ const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang
             <li class="lot-row">
               <div class="lot-id">
                 <span class="lot-type">{l.type}</span>
-                <span class="lot-num">{s.offer.table_lot} {l.lot}{l.surface ? ` · ${l.surface} m²` : ''}</span>
+                <span class="lot-num">
+                  {s.offer.table_lot} {l.lot}{l.surface ? ` · ≈ ${l.surface} m²` : ''}
+                  {l.modulable && <span class="lot-modulable">{lang === 'en' ? 'modular 3/4-room' : 'modulable 3 ou 4 pièces'}</span>}
+                </span>
               </div>
               <div class="lot-prices">
                 <span class="lot-old" aria-label={s.offer.table_before}>
@@ -282,6 +286,23 @@ const offerHref = lang === DEFAULT_LOCALE ? '/mentions-legales#offre' : `/${lang
     color: var(--ink-3);
     text-transform: uppercase;
     letter-spacing: var(--tr-mono);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .lot-modulable {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.15rem 0.5rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-transform: none;
+    letter-spacing: 0.01em;
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 500;
+    border-radius: 999px;
+    font-style: italic;
   }
 
   .lot-prices {

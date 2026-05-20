@@ -346,8 +346,8 @@ const fr: Strings = {
   },
   apparts: {
     eyebrow: "Le dernier lot",
-    h2: "Un appartement, une dernière chance.",
-    lead: "Prix indicatif susceptible d'évoluer — à confirmer au bureau de vente.",
+    h2: "Un appartement modulable, configurable 3 ou 4 pièces.",
+    lead: "Pièce supplémentaire optionnelle selon votre projet — détails et plan au bureau de vente.",
     from_label: "à partir de",
     receive_plan: "Recevoir le plan",
     legal_note_prefix:
@@ -604,8 +604,8 @@ const en: Strings = {
   },
   apparts: {
     eyebrow: "The last unit",
-    h2: "One apartment, one last chance.",
-    lead: "Indicative price, subject to change — to be confirmed at the sales office.",
+    h2: "A modular apartment, configurable as 3 or 4 rooms.",
+    lead: "Optional extra room depending on your project — details and floor plan at the sales office.",
     from_label: "starting from",
     receive_plan: "Get the floor plan",
     legal_note_prefix:
