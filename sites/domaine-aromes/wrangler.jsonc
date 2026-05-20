@@ -1,0 +1,27 @@
+// Cloudflare Worker — entrypoint unifié pour domaine-les-aromes.fr
+// /api/lead est traité par le worker (proxy n8n).
+// Tout le reste est servi depuis dist/ via le binding ASSETS.
+{
+  "name": "domaine-aromes-site",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Variables publiques injectées au runtime du worker.
+  // - N8N_WEBHOOK_URL : à créer (dupliquer le workflow stayn → nouveau Google Sheet)
+  //   Voir sites/domaine-aromes/deploy/DEPLOY.md
+  // - PUBLIC_GOOGLE_MAPS_KEY : clé Maps JS API restreinte par HTTP referrer
+  //   (whitelist `*.domaine-les-aromes.fr`, `*.pages.dev`, `localhost:4321`).
+  "vars": {
+    "N8N_WEBHOOK_URL": "",
+    "PUBLIC_GOOGLE_MAPS_KEY": ""
+  }
+}
