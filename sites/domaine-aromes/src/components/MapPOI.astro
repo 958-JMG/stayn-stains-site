@@ -1,0 +1,651 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props { lang?: Locale; }
+const { lang = DEFAULT_LOCALE } = Astro.props;
+const s = t(lang);
+
+// ============================================================
+// Coordonnées POI — Méré (78490) autour du Domaine Les Arômes.
+// Les distances/temps à pied sont indicatifs.
+// ============================================================
+const center = { lat: 48.7547, lng: 1.8197 }; // 15 route de Galluis, 78490 Méré
+
+type Cat = 'sale' | 'practical' | 'transit' | 'education' | 'worship' | 'sport';
+
+interface POI {
+  id: string;
+  cat: Cat;
+  icon: string;
+  label: string;
+  sub: string;
+  lat: number;
+  lng: number;
+  walk?: string; // "5 min"
+}
+
+const pois: POI[] = [
+  // Domaine Les Arômes — point central
+  { id: 'sale', cat: 'sale', icon: 'star', label: s.localisation.poi_sale, sub: s.localisation.poi_sale_sub, lat: 48.7547, lng: 1.8197, walk: '0 min' },
+
+  // Vie pratique
+  { id: 'mairie', cat: 'practical', icon: 'building', label: s.localisation.poi_mairie, sub: s.localisation.poi_mairie_sub, lat: 48.7555, lng: 1.8210, walk: '5 min' },
+  { id: 'marche', cat: 'practical', icon: 'shop', label: s.localisation.poi_marche, sub: s.localisation.poi_marche_sub, lat: 48.7794, lng: 1.8160, walk: '15 min · voiture' },
+  { id: 'poste', cat: 'practical', icon: 'mail', label: s.localisation.poi_poste, sub: s.localisation.poi_poste_sub, lat: 48.7790, lng: 1.8155, walk: '15 min · voiture' },
+  { id: 'shops', cat: 'practical', icon: 'shopping-bag', label: s.localisation.poi_shops, sub: s.localisation.poi_shops_sub, lat: 48.7788, lng: 1.8152, walk: '15 min · voiture' },
+
+  // Transports & accès
+  { id: 'rerd', cat: 'transit', icon: 'train', label: s.localisation.poi_rerd, sub: s.localisation.poi_rerd_sub, lat: 48.7600, lng: 1.8112, walk: '5 min · voiture' },
+  { id: 'rerb', cat: 'transit', icon: 'train', label: s.localisation.poi_rerb, sub: s.localisation.poi_rerb_sub, lat: 48.7700, lng: 1.8400, walk: 'accès direct' },
+  { id: 'm13', cat: 'transit', icon: 'metro', label: s.localisation.poi_m13, sub: s.localisation.poi_m13_sub, lat: 48.7700, lng: 1.8500, walk: 'accès direct' },
+  { id: 't11', cat: 'transit', icon: 'tram', label: s.localisation.poi_t11, sub: s.localisation.poi_t11_sub, lat: 48.7500, lng: 1.8000, walk: 'accès direct' },
+  { id: 'bus', cat: 'transit', icon: 'bus', label: s.localisation.poi_bus, sub: s.localisation.poi_bus_sub, lat: 48.7780, lng: 1.8150, walk: '15 min' },
+
+  // Éducation
+  { id: 'school-primary', cat: 'education', icon: 'school', label: s.localisation.poi_school_primary, sub: s.localisation.poi_school_primary_sub, lat: 48.7560, lng: 1.8200, walk: '6 min' },
+  { id: 'school-secondary', cat: 'education', icon: 'graduation', label: s.localisation.poi_school_secondary, sub: s.localisation.poi_school_secondary_sub, lat: 48.7780, lng: 1.8170, walk: '15 min · voiture' },
+
+  // Patrimoine & nature
+  { id: 'eglise', cat: 'worship', icon: 'church', label: s.localisation.poi_eglise, sub: s.localisation.poi_eglise_sub, lat: 48.7785, lng: 1.8145, walk: '15 min · voiture' },
+  { id: 'mosquee', cat: 'worship', icon: 'tree', label: s.localisation.poi_mosquee, sub: s.localisation.poi_mosquee_sub, lat: 48.7400, lng: 1.7900, walk: '10 min · voiture' },
+
+  // Sport & loisirs
+  { id: 'sport', cat: 'sport', icon: 'sport', label: s.localisation.poi_sport, sub: s.localisation.poi_sport_sub, lat: 48.7800, lng: 1.8200, walk: '15 min · voiture' },
+];
+
+// Couleurs catégories — palette nature olive/sauge
+const CAT_COLORS: Record<Cat, string> = {
+  sale: '#5C6B3F',       // vert olive — accent principal
+  practical: '#5A7C9D',  // bleu doux
+  transit: '#8B7355',    // brun chaud
+  education: '#B5651D',  // terre cuite
+  worship: '#3F4A2A',    // vert sauge sombre
+  sport: '#9A7B4F',      // ocre
+};
+
+// Carte interactive via Leaflet + OpenStreetMap (zéro Google).
+// Pas de clé API, pas de billing, pas de blocage navigateur (Brave Shields, etc.).
+// Tiles servies par CartoDB Voyager (CDN gratuit, palette claire matchant le site).
+
+const mapLang = lang === 'en' ? 'en' : 'fr';
+
+// Données sérialisées pour le client : POIs + couleurs
+// (transmises au script init via data-attribute JSON).
+const mapData = {
+  center,
+  zoom: 15,
+  language: mapLang,
+  catColors: CAT_COLORS,
+  pois: pois.map((p) => ({
+    id: p.id,
+    cat: p.cat,
+    label: p.label,
+    sub: p.sub,
+    lat: p.lat,
+    lng: p.lng,
+  })),
+};
+
+// Ouvre l'itinéraire piéton depuis le bureau de vente vers le POI
+function dirUrl(p: POI): string {
+  const origin = `${center.lat},${center.lng}`;
+  const dest = `${p.lat},${p.lng}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=walking`;
+}
+
+// Sections POI (pour le rendu en grille)
+const sections: Array<{ id: Cat; title: string; items: POI[] }> = [
+  { id: 'practical', title: s.localisation.section_practical, items: pois.filter((p) => p.cat === 'practical') },
+  { id: 'transit',   title: s.localisation.section_transit,   items: pois.filter((p) => p.cat === 'transit') },
+  { id: 'education', title: s.localisation.section_education, items: pois.filter((p) => p.cat === 'education') },
+  { id: 'worship',   title: s.localisation.section_worship,   items: pois.filter((p) => p.cat === 'worship') },
+  { id: 'sport',     title: s.localisation.section_sport,     items: pois.filter((p) => p.cat === 'sport') },
+];
+
+// Légende
+const legend: Array<{ cat: Cat; label: string }> = [
+  { cat: 'sale',      label: s.localisation.legend_sale },
+  { cat: 'practical', label: s.localisation.legend_practical },
+  { cat: 'transit',   label: s.localisation.legend_transit },
+  { cat: 'education', label: s.localisation.legend_education },
+  { cat: 'worship',   label: s.localisation.legend_worship },
+  { cat: 'sport',     label: s.localisation.legend_sport },
+];
+---
+
+<div class="map-poi" data-map-poi>
+  <!-- ========== CARTE INTERACTIVE (Leaflet + OpenStreetMap) ========== -->
+  <figure class="map-figure">
+    <div
+      class="map-interactive"
+      data-stayn-leaflet
+      data-map-config={JSON.stringify(mapData)}
+      role="region"
+      aria-label={s.localisation.map_region_aria}
+    >
+      <!-- Placeholder visible avant chargement de Leaflet -->
+      <div class="map-placeholder" aria-hidden="true">
+        <span class="map-placeholder-spinner"></span>
+      </div>
+    </div>
+
+    <figcaption class="map-legend" aria-label={s.localisation.map_legend_aria}>
+      {legend.map((l) => (
+        <span class="legend-item">
+          <span class="legend-dot" style={`background:${CAT_COLORS[l.cat]}`} aria-hidden="true"></span>
+          <span>{l.label}</span>
+        </span>
+      ))}
+    </figcaption>
+  </figure>
+
+  <!-- ========== GRILLE POI ========== -->
+  <div class="poi-sections">
+    {sections.map((sec) => (
+      <section class="poi-section" aria-labelledby={`sec-${sec.id}`}>
+        <header class="poi-section-head">
+          <span class="poi-section-dot" style={`background:${CAT_COLORS[sec.id]}`} aria-hidden="true"></span>
+          <h3 class="poi-section-title" id={`sec-${sec.id}`}>{sec.title}</h3>
+        </header>
+        <ul class="poi-list">
+          {sec.items.map((p) => (
+            <li class="poi-card" style={`--cat:${CAT_COLORS[sec.id]}`}>
+              <div class="poi-icon" aria-hidden="true">
+                {p.icon === 'building' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h2M13 9h2M9 13h2M13 13h2M9 17h2M13 17h2"/></svg>
+                )}
+                {p.icon === 'shop' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18l-1.5 11a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2L3 9Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+                )}
+                {p.icon === 'shopping-bag' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                )}
+                {p.icon === 'mail' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+                )}
+                {p.icon === 'train' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/><path d="m6 22 2-3M16 19l2 3"/></svg>
+                )}
+                {p.icon === 'metro' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m7 16 5-9 5 9"/><path d="M9 12h6"/></svg>
+                )}
+                {p.icon === 'tram' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="2"/><path d="M5 11h14"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/><path d="m4 21 3-4M17 17l3 4M11 3v-1M13 3v-1"/></svg>
+                )}
+                {p.icon === 'bus' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11h-2v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2H9v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2H4Z"/><path d="M4 11h16"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+                )}
+                {p.icon === 'school' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/><path d="M9 11h6"/></svg>
+                )}
+                {p.icon === 'graduation' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5a6 3 0 0 0 12 0v-5"/><path d="M22 10v6"/></svg>
+                )}
+                {p.icon === 'church' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M9 5h6"/><path d="m12 8-7 4v9h14v-9Z"/><path d="M9 21v-5h6v5"/></svg>
+                )}
+                {p.icon === 'mosque' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a5 5 0 0 0-5 5c0 2 1 3 1 5h8c0-2 1-3 1-5a5 5 0 0 0-5-5Z"/><path d="M5 13h14v8H5Z"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/><path d="M12 1v2"/></svg>
+                )}
+                {p.icon === 'sport' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20"/><path d="M12 2a14.5 14.5 0 0 1 0 20"/><path d="M2 12h20"/></svg>
+                )}
+              </div>
+              <div class="poi-body">
+                <p class="poi-label">{p.label}</p>
+                <p class="poi-sub">{p.sub}</p>
+              </div>
+              <div class="poi-meta">
+                {p.walk && (
+                  <span class="poi-walk">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m11 18-1 4M9 13l-2 4 4 1 2-3 4 1 1-4-3-3-1-3-3 1-2 3-3-2"/></svg>
+                    <span>{p.walk}</span>
+                  </span>
+                )}
+                <a href={dirUrl(p)} class="poi-dir" target="_blank" rel="noopener noreferrer" aria-label={`${s.localisation.directions} — ${p.label}`}>
+                  <span>{s.localisation.directions}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</div>
+
+<style>
+  .map-poi {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+    width: 100%;
+  }
+
+  /* ============ CARTE ============ */
+  .map-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .map-interactive,
+  .map-fallback {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 70vh;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .map-interactive {
+    box-shadow: 0 12px 36px -24px rgba(21, 23, 26, 0.18);
+  }
+  @media (min-width: 720px) {
+    .map-interactive,
+    .map-fallback {
+      aspect-ratio: 16 / 9;
+      max-height: 460px;
+    }
+  }
+  @media (min-width: 1100px) {
+    .map-interactive,
+    .map-fallback {
+      aspect-ratio: 21 / 9;
+      max-height: 480px;
+    }
+  }
+  .map-fallback iframe { width: 100%; height: 100%; display: block; }
+  .map-interactive > div:not(.map-placeholder) { width: 100%; height: 100%; }
+
+  /* Placeholder spinner avant chargement Maps JS API */
+  .map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-3);
+    transition: opacity 320ms var(--ease, ease);
+    pointer-events: none;
+  }
+  .map-interactive.is-loaded .map-placeholder {
+    opacity: 0;
+  }
+  .map-placeholder-spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: map-spin 720ms linear infinite;
+  }
+  @keyframes map-spin {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-placeholder-spinner { animation: none; }
+  }
+
+  .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+    padding: 0;
+    color: var(--ink-2);
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: var(--tr-wide);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 1px var(--line-2);
+    flex-shrink: 0;
+  }
+
+  /* ============ SECTIONS POI ============ */
+  .poi-sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+  .poi-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .poi-section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .poi-section-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .poi-section-title {
+    font-size: var(--step-3);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .poi-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+  .poi-card {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: border-color var(--dur-1) var(--ease),
+                transform var(--dur-1) var(--ease),
+                box-shadow var(--dur-1) var(--ease);
+  }
+  .poi-card:hover {
+    border-color: var(--cat, var(--accent));
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px -16px rgba(21, 23, 26, 0.18);
+  }
+
+  .poi-icon {
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--cat, var(--accent)) 12%, transparent);
+    color: var(--cat, var(--accent));
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .poi-icon svg { width: 20px; height: 20px; }
+
+  .poi-body { min-width: 0; }
+  .poi-label {
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 0.1rem;
+  }
+  .poi-sub {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .poi-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+    text-align: end;
+  }
+  .poi-walk {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    letter-spacing: var(--tr-wide);
+  }
+  .poi-walk svg { color: var(--cat, var(--accent)); }
+  .poi-dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--cat, var(--accent));
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-1) var(--ease);
+  }
+  .poi-dir:hover { border-bottom-color: currentColor; }
+
+  /* RTL adjustments */
+  [dir="rtl"] .poi-meta { align-items: flex-start; text-align: start; }
+  [dir="rtl"] .poi-dir svg { transform: scaleX(-1); }
+
+  /* ============ Mobile-first → desktop ============ */
+  @media (min-width: 600px) {
+    .poi-list { grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+  }
+  @media (min-width: 960px) {
+    .poi-list { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .poi-card {
+      grid-template-columns: 32px 1fr;
+      grid-template-areas:
+        "icon body"
+        ".    meta";
+    }
+    .poi-icon { grid-area: icon; width: 32px; height: 32px; }
+    .poi-icon svg { width: 18px; height: 18px; }
+    .poi-body { grid-area: body; }
+    .poi-meta {
+      grid-area: meta;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // ============================================================
+  // Initialisation Leaflet + OpenStreetMap (CartoDB Voyager tiles)
+  // — lazy-loaded au scroll, zéro Google, zéro clé API.
+  // ============================================================
+  type StaynPOI = {
+    id: string;
+    cat: string;
+    label: string;
+    sub: string;
+    lat: number;
+    lng: number;
+  };
+  type StaynMapConfig = {
+    center: { lat: number; lng: number };
+    zoom: number;
+    language: string;
+    catColors: Record<string, string>;
+    pois: StaynPOI[];
+  };
+
+  const LEAFLET_VERSION = '1.9.4';
+  const LEAFLET_CSS = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.css`;
+  const LEAFLET_JS = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.js`;
+  // CartoDB Voyager : tiles claires, palette beige/crème qui matche le site
+  const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  const TILE_ATTRIB =
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+  let leafletPromise: Promise<any> | null = null;
+
+  function loadLeaflet(): Promise<any> {
+    if (leafletPromise) return leafletPromise;
+    if (typeof window !== 'undefined' && (window as any).L) {
+      leafletPromise = Promise.resolve((window as any).L);
+      return leafletPromise;
+    }
+    // CSS d'abord — attendre son load avant d'init la map (sinon le
+    // .leaflet-container n'a pas ses styles critiques et la map ne s'affiche pas)
+    const cssReady = new Promise<void>((resolve) => {
+      const existing = document.querySelector(`link[href="${LEAFLET_CSS}"]`) as HTMLLinkElement | null;
+      if (existing) {
+        if ((existing as any).sheet) resolve();
+        else existing.addEventListener('load', () => resolve(), { once: true });
+        return;
+      }
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = LEAFLET_CSS;
+      link.addEventListener('load', () => resolve(), { once: true });
+      link.addEventListener('error', () => resolve(), { once: true }); // best-effort, init quand même
+      document.head.appendChild(link);
+    });
+
+    const jsReady = new Promise<any>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = LEAFLET_JS;
+      script.async = true;
+      script.onload = () => resolve((window as any).L);
+      script.onerror = () => {
+        leafletPromise = null;
+        reject(new Error('Leaflet JS failed to load'));
+      };
+      document.head.appendChild(script);
+    });
+
+    leafletPromise = Promise.all([cssReady, jsReady]).then(([, L]) => L);
+    return leafletPromise;
+  }
+
+  function escapeHtml(str: string): string {
+    return str.replace(/[<>"&]/g, (c) =>
+      ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', '&': '&amp;' })[c] || c
+    );
+  }
+
+  async function initStaynLeaflet(el: HTMLElement) {
+    const configRaw = el.dataset.mapConfig;
+    if (!configRaw) return;
+    let cfg: StaynMapConfig;
+    try {
+      cfg = JSON.parse(configRaw);
+    } catch {
+      return;
+    }
+
+    let L: any;
+    try {
+      L = await loadLeaflet();
+    } catch (err) {
+      console.error('[stayn-map]', err);
+      el.innerHTML = `<iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=1.79,48.74,1.85,48.78&layer=mapnik&marker=${cfg.center.lat},${cfg.center.lng}"
+        width="100%" height="100%" style="border:0;" loading="lazy"
+        title="Domaine Les Arômes"></iframe>`;
+      return;
+    }
+
+    try {
+      const mapDiv = document.createElement('div');
+      mapDiv.style.width = '100%';
+      mapDiv.style.height = '100%';
+      mapDiv.style.minHeight = '300px';
+      el.appendChild(mapDiv);
+      console.log('[stayn-map] Leaflet ready, initializing on', mapDiv);
+
+      const map = L.map(mapDiv, {
+        center: [cfg.center.lat, cfg.center.lng],
+        zoom: cfg.zoom,
+        scrollWheelZoom: true,
+        zoomControl: true,
+        attributionControl: true,
+      });
+
+      L.tileLayer(TILE_URL, {
+        attribution: TILE_ATTRIB,
+        maxZoom: 19,
+        subdomains: 'abcd',
+      }).addTo(map);
+
+      // Marker central — point principal du Domaine Les Arômes
+      const centerMarker = L.circleMarker([cfg.center.lat, cfg.center.lng], {
+        radius: 14,
+        fillColor: '#5C6B3F',
+        fillOpacity: 1,
+        color: '#FFFFFF',
+        weight: 3,
+      }).addTo(map);
+      centerMarker.bindPopup(
+        `<div style="font-family:system-ui,sans-serif;padding:2px 4px;max-width:240px;">
+          <strong style="color:#2A2E25;font-size:14px;">Domaine Les Arômes</strong>
+          <div style="color:#6E7563;font-size:12px;margin-top:2px;">15 route de Galluis, 78490 Méré</div>
+        </div>`,
+        { closeButton: true, autoPan: true }
+      );
+
+      // Markers POI : cercles ronds colorés par catégorie + popup au clic
+      cfg.pois
+        .filter((p) => p.cat !== 'sale')
+        .forEach((poi) => {
+          const color = cfg.catColors[poi.cat] || '#5C6B3F';
+          const marker = L.circleMarker([poi.lat, poi.lng], {
+            radius: 8,
+            fillColor: color,
+            fillOpacity: 1,
+            color: '#FFFFFF',
+            weight: 2,
+          }).addTo(map);
+
+          marker.bindPopup(
+            `<div style="font-family:system-ui,sans-serif;padding:2px 4px;max-width:220px;">
+              <strong style="color:#2A2E25;font-size:14px;">${escapeHtml(poi.label)}</strong>
+              <div style="color:#6E7563;font-size:12px;margin-top:2px;">${escapeHtml(poi.sub)}</div>
+            </div>`,
+            { closeButton: true, autoPan: true }
+          );
+        });
+
+      el.classList.add('is-loaded');
+    } catch (err) {
+      console.error('[stayn-map] init failed', err);
+      el.innerHTML = `<iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=1.79,48.74,1.85,48.78&layer=mapnik&marker=${cfg.center.lat},${cfg.center.lng}"
+        width="100%" height="100%" style="border:0;" loading="lazy"
+        title="Domaine Les Arômes"></iframe>`;
+    }
+  }
+
+  function bootStaynLeaflet() {
+    document.querySelectorAll<HTMLElement>('[data-stayn-leaflet]:not([data-stayn-bound])').forEach((el) => {
+      el.dataset.staynBound = 'true';
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              observer.disconnect();
+              void initStaynLeaflet(el);
+            }
+          });
+        },
+        { rootMargin: '200px 0px' }
+      );
+      observer.observe(el);
+    });
+  }
+
+  bootStaynLeaflet();
+  document.addEventListener('astro:page-load', bootStaynLeaflet);
+</script>

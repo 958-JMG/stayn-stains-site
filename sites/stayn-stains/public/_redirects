@@ -1,0 +1,4 @@
+# Cloudflare Pages redirect rules
+# (Apex → www géré côté Cloudflare Rules > Redirect Rules)
+/home / 301
+/index / 301

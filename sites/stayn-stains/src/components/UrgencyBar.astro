@@ -1,0 +1,256 @@
+---
+import { type Locale, DEFAULT_LOCALE } from '../i18n/locales';
+import { t } from '../i18n/strings';
+
+interface Props {
+  deadline: string;
+  reservatairesRestants?: number;
+  remiseLabel?: string;
+  lang?: Locale;
+}
+
+const {
+  deadline,
+  reservatairesRestants = 5,
+  remiseLabel,
+  lang = DEFAULT_LOCALE,
+} = Astro.props;
+const s = t(lang);
+const remiseFinal = remiseLabel || s.urgency.remise_label;
+---
+
+<div
+  class="urgency-bar"
+  data-urgency-bar
+  data-deadline={deadline}
+  data-cd-prefix={s.urgency.cd_prefix}
+  data-cd-d={s.offer.cd_d}
+  data-cd-h={s.offer.cd_h}
+  data-cd-m={s.offer.cd_m}
+  role="region"
+  aria-label={s.urgency.region_label}
+>
+  <div class="container is-xl urgency-row">
+    <span class="urgency-pulse" aria-hidden="true"></span>
+    <span class="urgency-tag">{s.urgency.tag}</span>
+    <p class="urgency-text">
+      <strong>{remiseFinal}</strong>
+      <span class="sep" aria-hidden="true">·</span>
+      <span>{s.urgency.text_prefix} <strong>{s.urgency.text_count_part(reservatairesRestants)}</strong></span>
+    </p>
+    <div class="urgency-countdown" aria-live="polite">
+      <span class="urgency-cd-label">{s.urgency.cd_prefix}</span>
+      <span class="urgency-cd-value" data-countdown>—</span>
+    </div>
+    <a href="#contact" class="urgency-cta">
+      <span>{s.urgency.cta}</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+    <button class="urgency-close" type="button" aria-label={s.urgency.close_aria} data-urgency-close>×</button>
+  </div>
+</div>
+
+<style>
+  .urgency-bar {
+    background: linear-gradient(95deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #FFFFFF;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    transition: max-height var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+  }
+  .urgency-bar[hidden] { display: none; }
+  .urgency-bar.is-closed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .urgency-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding-block: 0.6rem;
+    flex-wrap: wrap;
+  }
+  [dir="rtl"] .urgency-row { direction: rtl; }
+
+  .urgency-pulse {
+    flex-shrink: 0;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--cream);
+    box-shadow: 0 0 0 0 rgba(240, 226, 200, 0.6);
+    animation: urgency-pulse 2s var(--ease) infinite;
+  }
+  @keyframes urgency-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(240, 226, 200, 0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(240, 226, 200, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(240, 226, 200, 0); }
+  }
+
+  .urgency-tag {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+    font-weight: 600;
+    color: var(--cream);
+    flex-shrink: 0;
+  }
+
+  .urgency-text {
+    color: #FFFFFF;
+    font-size: var(--step-0);
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.35;
+  }
+  .urgency-text strong { color: var(--cream); font-weight: 700; }
+  .urgency-text .sep { opacity: 0.4; margin-inline: 0.6rem; }
+
+  .urgency-countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .urgency-cd-label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: var(--tr-mono);
+  }
+  .urgency-cd-value {
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    color: var(--cream);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+
+  .urgency-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: var(--step-0);
+    font-weight: 600;
+    letter-spacing: var(--tr-wide);
+    border-radius: 2px;
+    transition: background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+    flex-shrink: 0;
+  }
+  .urgency-cta:hover {
+    background: #F8E9C8;
+    transform: translateY(-1px);
+    color: var(--ink);
+  }
+  .urgency-cta .arrow { transition: transform var(--dur-1) var(--ease); }
+  [dir="rtl"] .urgency-cta .arrow { transform: scaleX(-1); }
+  .urgency-cta:hover .arrow { transform: translateX(2px); }
+  [dir="rtl"] .urgency-cta:hover .arrow { transform: scaleX(-1) translateX(2px); }
+
+  .urgency-close {
+    width: 32px; height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 22px;
+    line-height: 1;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .urgency-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #FFFFFF;
+  }
+
+  @media (max-width: 900px) {
+    .urgency-tag { display: none; }
+    .urgency-text { font-size: 13px; flex-basis: 100%; order: 1; }
+    .urgency-pulse { order: 0; }
+    .urgency-countdown { order: 2; }
+    .urgency-cta { order: 3; }
+    .urgency-close { order: 4; }
+  }
+  @media (max-width: 540px) {
+    .urgency-cta span:first-child { display: none; }
+    .urgency-cta { padding: 0.5rem 0.7rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .urgency-pulse { animation: none; }
+  }
+</style>
+
+<script>
+  function bindUrgency() {
+    const bar = document.querySelector<HTMLElement>('[data-urgency-bar]');
+    if (!bar || bar.dataset.bound === 'true') return;
+    bar.dataset.bound = 'true';
+
+    const deadline = bar.dataset.deadline;
+    const cd = bar.querySelector<HTMLElement>('[data-countdown]');
+    const close = bar.querySelector<HTMLButtonElement>('[data-urgency-close]');
+    const dLabel = bar.dataset.cdD || 'd';
+    const hLabel = bar.dataset.cdH || 'h';
+    const mLabel = bar.dataset.cdM || 'm';
+
+    if (!deadline || !cd) return;
+    const target = new Date(deadline).getTime();
+    if (Number.isNaN(target)) return;
+
+    function pad(n: number) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+    function update() {
+      const diff = target - Date.now();
+      if (diff <= 0) {
+        bar?.setAttribute('hidden', '');
+        return;
+      }
+      const days = Math.floor(diff / 86_400_000);
+      const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+      const mins = Math.floor((diff % 3_600_000) / 60_000);
+      const secs = Math.floor((diff % 60_000) / 1_000);
+      cd!.textContent = `${days}j ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
+    }
+
+    update();
+    const id = window.setInterval(update, 1_000);
+
+    if (close) {
+      close.addEventListener('click', () => {
+        bar.classList.add('is-closed');
+        try { sessionStorage.setItem('urgency_closed', '1'); } catch {}
+      });
+    }
+
+    try {
+      if (sessionStorage.getItem('urgency_closed') === '1') {
+        bar.classList.add('is-closed');
+      }
+    } catch {}
+
+    document.addEventListener('astro:before-swap', () => {
+      window.clearInterval(id);
+    }, { once: true });
+  }
+
+  bindUrgency();
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-urgency-bar]').forEach((el) => {
+      el.dataset.bound = 'false';
+    });
+    bindUrgency();
+  });
+</script>
