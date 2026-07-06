@@ -249,7 +249,7 @@ const fr: Strings = {
   meta: {
     title_home: "Stay'n — Devenez propriétaire à Stains, Paris à 15 min",
     desc_home:
-      "58 logements neufs T2 à T5 à Stains (93). RE 2020, TVA 5,5 %, éligible PTZ. Offre de printemps : jusqu'à −15 000 € de remise immédiate. À partir de 168 000 € hors parking.",
+      "58 logements neufs T2 à T5 à Stains (93). RE 2020, TVA 5,5 %, éligible PTZ. Offre de l'été : jusqu'à −15 000 € de remise immédiate. À partir de 168 000 € hors parking.",
     title_merci: "Merci pour votre demande",
     desc_merci:
       "Votre demande de documentation a bien été enregistrée. Un conseiller vous recontacte sous 24 heures ouvrées.",
@@ -269,8 +269,8 @@ const fr: Strings = {
     call_aria: "Appeler — 07 63 27 78 78",
   },
   urgency: {
-    region_label: "Offre de printemps",
-    tag: "Offre de printemps",
+    region_label: "Offre de l'été",
+    tag: "Offre de l'été",
     remise_label: "Jusqu'à −15 000 € de remise immédiate",
     text_prefix: "Sur",
     text_count_part: () => "les lots encore disponibles",
@@ -284,16 +284,16 @@ const fr: Strings = {
     h1_line2: "de locataire à propriétaire.",
     lead_strong: "Stop aux loyers perdus.",
     lead_body:
-      "58 logements T2 à T5, à 15 minutes de Paris. Avec l'offre de printemps, devenez propriétaire à partir de 168 000 € au lieu de 175 000 €.",
-    cta_offer: "Voir l'offre de printemps",
+      "58 logements T2 à T5, à 15 minutes de Paris. Avec l'offre de l'été, devenez propriétaire à partir de 168 000 € au lieu de 175 000 €.",
+    cta_offer: "Voir l'offre de l'été",
     cta_program: "Découvrir le programme",
     bullet_re2020: "RE 2020",
     bullet_tva: "TVA réduite 5,5 %",
     bullet_ptz: "Éligible PTZ",
   },
   offer: {
-    section_label: "Offre de printemps",
-    tag: "Offre de printemps",
+    section_label: "Offre de l'été",
+    tag: "Offre de l'été",
     title_prefix: "Jusqu'à",
     title_or: "de remise immédiate",
     lead_strong_first: () => "",
@@ -301,7 +301,7 @@ const fr: Strings = {
     table_h: "Exemples de lots disponibles",
     table_lot: "Lot",
     table_before: "Prix initial",
-    table_after: "Prix de printemps",
+    table_after: "Prix d'été",
     table_save: "Vous économisez",
     bonus_tag: "Pour le plus rapide",
     bonus_subtitle: "Offre limitée aux 5 premiers réservataires",
@@ -508,7 +508,7 @@ const en: Strings = {
   meta: {
     title_home: "Stay'n — Become a homeowner in Stains, 15 min from Paris",
     desc_home:
-      "58 brand-new apartments (1- to 4-bedroom) in Stains (Greater Paris). RE 2020 standard, reduced 5.5% VAT, PTZ-eligible. Spring offer: up to −€15,000 instant discount. From €168,000 (excl. parking).",
+      "58 brand-new apartments (1- to 4-bedroom) in Stains (Greater Paris). RE 2020 standard, reduced 5.5% VAT, PTZ-eligible. Summer offer: up to −€15,000 instant discount. From €168,000 (excl. parking).",
     title_merci: "Thank you for your enquiry",
     desc_merci:
       "Your documentation request has been received. A consultant will get back to you within 24 business hours.",
@@ -528,8 +528,8 @@ const en: Strings = {
     call_aria: "Call — +33 7 63 27 78 78",
   },
   urgency: {
-    region_label: "Spring offer",
-    tag: "Spring offer",
+    region_label: "Summer offer",
+    tag: "Summer offer",
     remise_label: "Up to −€15,000 instant discount",
     text_prefix: "On",
     text_count_part: () => "available units",
@@ -543,16 +543,16 @@ const en: Strings = {
     h1_line2: "start owning.",
     lead_strong: "No more rent disappearing each month.",
     lead_body:
-      "58 brand-new 1- to 4-bedroom apartments, 15 minutes from central Paris. With the spring offer, become a homeowner from €168,000 instead of €175,000.",
-    cta_offer: "See the spring offer",
+      "58 brand-new 1- to 4-bedroom apartments, 15 minutes from central Paris. With the summer offer, become a homeowner from €168,000 instead of €175,000.",
+    cta_offer: "See the summer offer",
     cta_program: "Discover the project",
     bullet_re2020: "RE 2020 standard",
     bullet_tva: "Reduced 5.5% VAT",
     bullet_ptz: "PTZ-eligible",
   },
   offer: {
-    section_label: "Spring offer",
-    tag: "Spring offer",
+    section_label: "Summer offer",
+    tag: "Summer offer",
     title_prefix: "Up to",
     title_or: "instant discount",
     lead_strong_first: () => "",
@@ -560,7 +560,7 @@ const en: Strings = {
     table_h: "Available units · examples",
     table_lot: "Unit",
     table_before: "List price",
-    table_after: "Spring price",
+    table_after: "Summer price",
     table_save: "You save",
     bonus_tag: "For the quickest",
     bonus_subtitle: "Limited to the first 5 buyers",
@@ -768,7 +768,7 @@ const ar: Strings = {
   meta: {
     title_home: "Stay'n — تَملَّك منزلك في ستان، ⁦15 دقيقة⁩ من باريس",
     desc_home:
-      "58 شقة جديدة من غرفتين إلى خمس غرف في ستان (شمال باريس). معيار RE 2020، ضريبة قيمة مضافة مخفّضة 5.5٪، مؤهَّل لقرض PTZ. عرض الربيع: حتى ⁦−15 000 €⁩ خصم فوري. ابتداءً من ⁦168 000 €⁩ باستثناء موقف السيارة.",
+      "58 شقة جديدة من غرفتين إلى خمس غرف في ستان (شمال باريس). معيار RE 2020، ضريبة قيمة مضافة مخفّضة 5.5٪، مؤهَّل لقرض PTZ. عرض الصيف: حتى ⁦−15 000 €⁩ خصم فوري. ابتداءً من ⁦168 000 €⁩ باستثناء موقف السيارة.",
     title_merci: "شكراً على طلبكم",
     desc_merci:
       "تم استلام طلبكم للحصول على الوثائق. سيتواصل معكم مستشار خلال 24 ساعة عمل.",
@@ -788,8 +788,8 @@ const ar: Strings = {
     call_aria: "اتصلوا — 78 78 27 63 7 33+",
   },
   urgency: {
-    region_label: "عرض الربيع",
-    tag: "عرض الربيع",
+    region_label: "عرض الصيف",
+    tag: "عرض الصيف",
     remise_label: "حتى ⁦−15 000 €⁩ خصم فوري",
     text_prefix: "على",
     text_count_part: () => "العقارات المتاحة",
@@ -803,16 +803,16 @@ const ar: Strings = {
     h1_line2: "من الإيجار إلى التَملُّك.",
     lead_strong: "كفى ضياعاً للإيجارات.",
     lead_body:
-      "58 شقة جديدة من غرفتين إلى خمس غرف، ⁦15 دقيقة⁩ من باريس. مع عرض الربيع، تَملَّك منزلك ابتداءً من ⁦168 000 €⁩ بدلاً من ⁦175 000 €⁩.",
-    cta_offer: "اطّلعوا على عرض الربيع",
+      "58 شقة جديدة من غرفتين إلى خمس غرف، ⁦15 دقيقة⁩ من باريس. مع عرض الصيف، تَملَّك منزلك ابتداءً من ⁦168 000 €⁩ بدلاً من ⁦175 000 €⁩.",
+    cta_offer: "اطّلعوا على عرض الصيف",
     cta_program: "اكتشفوا المشروع",
     bullet_re2020: "معيار RE 2020",
     bullet_tva: "ضريبة قيمة مضافة 5.5٪",
     bullet_ptz: "مؤهَّل لقرض PTZ",
   },
   offer: {
-    section_label: "عرض الربيع",
-    tag: "عرض الربيع",
+    section_label: "عرض الصيف",
+    tag: "عرض الصيف",
     title_prefix: "حتى",
     title_or: "خصم فوري",
     lead_strong_first: () => "",
@@ -820,7 +820,7 @@ const ar: Strings = {
     table_h: "أمثلة من العقارات المتاحة",
     table_lot: "العقار",
     table_before: "السعر الأصلي",
-    table_after: "سعر الربيع",
+    table_after: "سعر الصيف",
     table_save: "توفِّرون",
     bonus_tag: "للأسرع",
     bonus_subtitle: "العرض محدود للحاجزين الخمسة الأوائل",
