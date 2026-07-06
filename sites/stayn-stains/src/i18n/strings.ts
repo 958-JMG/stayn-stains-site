@@ -330,7 +330,7 @@ const fr: Strings = {
       "Jardin intérieur, stationnement sécurisé, balcon ou terrasse pour chaque appartement. Cuisine ouverte, prestations soignées, fibre optique.",
     f2_h: "Norme RE 2020",
     f2_p:
-      "Dernières normes environnementales, isolation renforcée et équipements économes. Confort en toute saison, factures réduites toute l'année.",
+      "Dernières normes environnementales, isolation renforcée et équipements économes. Le confort du neuf : chaud en hiver, frais en été — et des factures réduites toute l'année.",
     f3_h: "TVA 5,5 % + PTZ",
     f3_p:
       "TVA réduite à 5,5 % au lieu de 20 %, sous conditions de ressources. Éligible au Prêt à Taux Zéro pour boucler votre financement sereinement.",
@@ -588,7 +588,7 @@ const en: Strings = {
       "Inner garden, secure parking, balcony or terrace for every apartment. Open-plan kitchen, careful finishes, fibre internet.",
     f2_h: "RE 2020 standard",
     f2_p:
-      "Latest environmental standards, reinforced insulation, energy-efficient equipment. Comfort year-round, lower bills.",
+      "Latest environmental standards, reinforced insulation, energy-efficient equipment. New-build comfort: warm in winter, cool in summer — with lower bills year-round.",
     f3_h: "5.5% VAT + PTZ",
     f3_p:
       "Reduced 5.5% VAT instead of 20%, subject to income criteria. PTZ-eligible (zero-rate state loan) to round out your financing.",
@@ -848,7 +848,7 @@ const ar: Strings = {
       "حديقة داخلية، موقف سيّارات آمن، شرفة أو تراس لكل شقّة. مطبخ مفتوح، تشطيبات راقية، ألياف بصرية.",
     f2_h: "معيار RE 2020",
     f2_p:
-      "أحدث المعايير البيئيّة، عزل مُعزَّز ومعدّات موفّرة للطاقة. راحة على مدار السنة، فواتير أخفض.",
+      "أحدث المعايير البيئيّة، عزل مُعزَّز ومعدّات موفّرة للطاقة. راحة السكن الجديد: دفء في الشتاء وانتعاش في الصيف — وفواتير أخفض على مدار السنة.",
     f3_h: "ضريبة 5.5٪ + قرض PTZ",
     f3_p:
       "ضريبة قيمة مضافة 5.5٪ بدلاً من 20٪، رهناً بشروط الدخل. مؤهَّل لقرض PTZ بدون فائدة لاستكمال تمويلكم.",
