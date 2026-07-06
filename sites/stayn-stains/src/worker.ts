@@ -19,6 +19,12 @@ export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    // Canonique : apex → www (301), chemin et query préservés.
+    if (url.hostname === 'stayn-stains.fr') {
+      url.hostname = 'www.stayn-stains.fr';
+      return Response.redirect(url.toString(), 301);
+    }
+
     if (url.pathname === '/api/lead') {
       return handleLead(request, env);
     }
