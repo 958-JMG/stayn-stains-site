@@ -15,6 +15,12 @@
   "observability": {
     "enabled": true
   },
+  // Custom domains — préserve les bindings à chaque `wrangler deploy`
+  // (sans ce bloc, un deploy détache www + apex du worker).
+  "routes": [
+    { "pattern": "www.stayn-stains.fr", "custom_domain": true },
+    { "pattern": "stayn-stains.fr", "custom_domain": true }
+  ],
   // Variables publiques injectées au runtime du worker.
   // - N8N_WEBHOOK_URL : URL du webhook n8n (payload non sensible).
   // - PUBLIC_GOOGLE_MAPS_KEY : clé Maps JS API restreinte par HTTP referrer
