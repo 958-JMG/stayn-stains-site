@@ -17,11 +17,11 @@ interface Props {
 }
 const {
   lang = DEFAULT_LOCALE,
-  deadline = '2026-06-15T23:59:59+02:00',
+  deadline = '2026-08-31T23:59:59+02:00',
 } = Astro.props;
 const s = t(lang);
 
-// Lots de l'offre de printemps — prix barrés réels.
+// Lots de l'offre de l'été — prix barrés réels.
 // À actualiser avec OZIMMO selon disponibilité.
 const apparts = [
   { type: s.apparts.type_t2, prixOld: 175000, prix: 168000, lot: 'A32', save: 7000 },
