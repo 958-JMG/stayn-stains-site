@@ -28,6 +28,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   prefetch: true,
+  // Astro 7 compresse par défaut selon les règles JSX ('jsx') et colle des mots :
+  // true = la compression sans perte d'Astro 6.
+  compressHTML: true,
   image: {
     service: { entrypoint: 'astro/assets/services/sharp' },
   },
