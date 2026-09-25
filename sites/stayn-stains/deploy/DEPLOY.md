@@ -132,30 +132,30 @@ Une fois la zone Cloudflare active :
 
 ### 4.3 Redirection apex → www
 
-Dashboard Cloudflare → zone `stayn-stains.fr` → **Rules** → **Redirect Rules** → **Create rule** :
+Gérée par le worker (`src/worker.ts`, bloc « Canonique ») : toute requête GET/HEAD sur `stayn-stains.fr` part en 301 vers `https://www.stayn-stains.fr`, chemin et query conservés. Pas de Redirect Rule dans le dashboard.
 
-- **Name** : Apex → www
-- **When incoming requests match** : Custom filter expression
-  - Hostname equals `stayn-stains.fr`
-- **Then** : Static redirect, status `301`, expression :
-  ```
-  concat("https://www.stayn-stains.fr", http.request.uri.path)
-  ```
+Condition : `"run_worker_first": true` dans la section `assets` de `wrangler.jsonc`. Sans ce réglage, les pages existantes (`/`, `/mentions-legales/`…) sont servies en direct sur l'apex et le worker n'est jamais appelé pour elles.
 
-Deploy.
+Vérification après chaque déploiement :
+
+```bash
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" https://stayn-stains.fr/mentions-legales/
+```
+
+→ attendu : `301 https://www.stayn-stains.fr/mentions-legales/`.
 
 ### 4.4 Déployer le worker (au lieu de Pages "pur")
 
 Comme on a un `worker.ts` qui gère `/api/lead`, il faut **déployer en mode Workers + Assets** plutôt que Pages classique :
 
 ```bash
-cd "clients/stayn-stains/site"
+cd sites/stayn-stains
 npm install
 npm run build
 npx wrangler deploy
 ```
 
-CF déploie le worker avec le binding ASSETS sur `dist/`. Le worker prend la priorité sur les routes dynamiques (`/api/lead`), tout le reste est servi en statique depuis le CDN.
+CF déploie le worker avec le binding ASSETS sur `dist/`. Le worker reçoit toutes les requêtes (`run_worker_first`) : il redirige l'apex vers www, traite `/api/lead` et sert le reste depuis `dist/`.
 
 Pour brancher le custom domain au worker : Cloudflare dashboard → **Workers & Pages** → `stayn-stains-site` → **Settings** → **Triggers** → **Add Custom Domain** → `www.stayn-stains.fr` et `stayn-stains.fr`.
 
