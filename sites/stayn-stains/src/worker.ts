@@ -8,6 +8,8 @@
  *   filtrent souvent les domaines n8n.cloud.
  *
  * Tout le reste → binding ASSETS (fichiers statiques dans ./dist).
+ * Le worker passe avant les assets (run_worker_first dans wrangler.jsonc) :
+ * sans ça, la redirection apex → www ne s'applique pas aux pages existantes.
  */
 
 export interface Env {
@@ -19,10 +21,11 @@ export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    // Canonique : apex → www (301), chemin et query préservés.
-    if (url.hostname === 'stayn-stains.fr') {
-      url.hostname = 'www.stayn-stains.fr';
-      return Response.redirect(url.toString(), 301);
+    // Canonique : apex → https://www (301), chemin et query préservés.
+    // GET/HEAD seulement : un 301 change un POST en GET, le formulaire
+    // (/api/lead) répond donc sur les deux hôtes.
+    if (url.hostname === 'stayn-stains.fr' && (request.method === 'GET' || request.method === 'HEAD')) {
+      return Response.redirect(`https://www.stayn-stains.fr${url.pathname}${url.search}`, 301);
     }
 
     if (url.pathname === '/api/lead') {

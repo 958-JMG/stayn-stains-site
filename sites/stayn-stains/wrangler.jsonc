@@ -1,6 +1,6 @@
 // Cloudflare Worker — entrypoint unifié pour stayn-stains.fr
-// /api/lead est traité par le worker (proxy n8n).
-// Tout le reste est servi depuis dist/ via le binding ASSETS.
+// Le worker reçoit toutes les requêtes : apex → www (301), /api/lead (proxy n8n),
+// tout le reste est servi depuis dist/ via le binding ASSETS.
 {
   "name": "stayn-stains-site",
   "main": "./src/worker.ts",
@@ -10,7 +10,11 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    // Exécute le worker AVANT de servir un asset statique existant.
+    // Sinon /, /mentions-legales/… sont servis en direct sur l'apex et le
+    // worker (redirection apex → www) n'est jamais appelé pour ces chemins.
+    "run_worker_first": true
   },
   "observability": {
     "enabled": true

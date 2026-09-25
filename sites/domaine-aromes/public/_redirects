@@ -1,4 +1,4 @@
 # Cloudflare Pages redirect rules
-# (Apex → www géré côté Cloudflare Rules > Redirect Rules)
+# (Apex → www : à ajouter dans le worker au lancement, cf. deploy/DEPLOY.md §3)
 /home / 301
 /index / 301

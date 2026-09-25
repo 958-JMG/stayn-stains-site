@@ -44,7 +44,7 @@ Dashboard Cloudflare → Workers & Pages → `domaine-aromes-site` → **Setting
 
 Préalable : la zone DNS `domaine-les-aromes.fr` doit pointer ses nameservers vers Cloudflare (cf. §4 du DEPLOY stayn-stains).
 
-Ajouter une **Redirect Rule** apex → www (cf. §4.3 du DEPLOY stayn-stains, remplacer le nom de domaine).
+Redirection apex → www : reprendre le bloc « Canonique » de `sites/stayn-stains/src/worker.ts` (nom de domaine remplacé) et `"run_worker_first": true` dans `wrangler.jsonc` — cf. §4.3 du DEPLOY stayn-stains. Le worker actuel de ce site ne redirige pas encore.
 
 ## 4. Vérifications post-déploiement
 
