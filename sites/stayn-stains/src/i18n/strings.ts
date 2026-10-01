@@ -33,6 +33,7 @@ export interface Strings {
   };
   hero: {
     eyebrow: string;
+    works: string;
     h1_line1: string;
     h1_line2: string;
     lead_strong: string;
@@ -270,7 +271,7 @@ const fr: Strings = {
   },
   urgency: {
     region_label: "Offre d'automne",
-    tag: "Offre d'automne",
+    tag: "Offre d'automne · Démarrage des travaux",
     remise_label: "Jusqu'à −15 000 € de remise immédiate",
     text_prefix: "Sur",
     text_count_part: () => "les lots encore disponibles",
@@ -280,6 +281,7 @@ const fr: Strings = {
   },
   hero: {
     eyebrow: "Programme neuf · Stains 93240",
+    works: "Démarrage des travaux",
     h1_line1: "C'est le moment de passer",
     h1_line2: "de locataire à propriétaire.",
     lead_strong: "Stop aux loyers perdus.",
@@ -293,7 +295,7 @@ const fr: Strings = {
   },
   offer: {
     section_label: "Offre d'automne",
-    tag: "Offre d'automne",
+    tag: "Offre d'automne · Démarrage des travaux",
     title_prefix: "Jusqu'à",
     title_or: "de remise immédiate",
     lead_strong_first: () => "",
@@ -529,7 +531,7 @@ const en: Strings = {
   },
   urgency: {
     region_label: "Autumn offer",
-    tag: "Autumn offer",
+    tag: "Autumn offer · Construction underway",
     remise_label: "Up to −€15,000 instant discount",
     text_prefix: "On",
     text_count_part: () => "available units",
@@ -539,6 +541,7 @@ const en: Strings = {
   },
   hero: {
     eyebrow: "New development · Stains 93240",
+    works: "Construction underway",
     h1_line1: "Stop renting,",
     h1_line2: "start owning.",
     lead_strong: "No more rent disappearing each month.",
@@ -552,7 +555,7 @@ const en: Strings = {
   },
   offer: {
     section_label: "Autumn offer",
-    tag: "Autumn offer",
+    tag: "Autumn offer · Construction underway",
     title_prefix: "Up to",
     title_or: "instant discount",
     lead_strong_first: () => "",
@@ -789,7 +792,7 @@ const ar: Strings = {
   },
   urgency: {
     region_label: "عرض الخريف",
-    tag: "عرض الخريف",
+    tag: "عرض الخريف · بدء أعمال البناء",
     remise_label: "حتى ⁦−15 000 €⁩ خصم فوري",
     text_prefix: "على",
     text_count_part: () => "العقارات المتاحة",
@@ -799,6 +802,7 @@ const ar: Strings = {
   },
   hero: {
     eyebrow: "مشروع جديد · ستان 93240",
+    works: "بدء أعمال البناء",
     h1_line1: "حان الوقت للانتقال",
     h1_line2: "من الإيجار إلى التَملُّك.",
     lead_strong: "كفى ضياعاً للإيجارات.",
@@ -812,7 +816,7 @@ const ar: Strings = {
   },
   offer: {
     section_label: "عرض الخريف",
-    tag: "عرض الخريف",
+    tag: "عرض الخريف · بدء أعمال البناء",
     title_prefix: "حتى",
     title_or: "خصم فوري",
     lead_strong_first: () => "",

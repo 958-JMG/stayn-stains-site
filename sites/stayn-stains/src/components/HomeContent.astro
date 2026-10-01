@@ -40,7 +40,10 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
   <HeroSlider lang={lang} />
   <div class="hero-grid container is-xl">
     <div class="hero-text reveal">
-      <span class="eyebrow">{s.hero.eyebrow}</span>
+      <div class="hero-status">
+        <span class="eyebrow">{s.hero.eyebrow}</span>
+        <span class="hero-badge"><span class="hero-badge-dot" aria-hidden="true"></span>{s.hero.works}</span>
+      </div>
       <h1>
         {s.hero.h1_line1}
         <em>{s.hero.h1_line2}</em>
@@ -253,6 +256,21 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
   .hero-grid { position: relative; z-index: 3; width: 100%; padding-block: var(--s-8); }
   .hero-text { max-width: 640px; }
   .hero .eyebrow { color: var(--cream); margin-bottom: var(--s-3); }
+  .hero-status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); margin-bottom: var(--s-3); }
+  .hero-status .eyebrow { margin-bottom: 0; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--cream); color: var(--ink);
+    font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: var(--tr-mono);
+    text-transform: uppercase; font-weight: 600; border-radius: 2px;
+  }
+  .hero-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: hero-badge-pulse 2s var(--ease) infinite; }
+  @keyframes hero-badge-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(129, 41, 51, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(129, 41, 51, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(129, 41, 51, 0); }
+  }
   .hero h1 { color: #FFFFFF; font-size: var(--step-7); line-height: 1.05; margin-bottom: var(--s-4); }
   .hero h1 em {
     font-style: italic;
