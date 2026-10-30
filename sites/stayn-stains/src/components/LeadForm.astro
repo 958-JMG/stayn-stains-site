@@ -26,6 +26,7 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
   data-msg-submitting={s.form.submitting}
   data-msg-submit={s.form.submit}
 >
+  <h3 class="form-heading">{s.form.submit}</h3>
   <div class="form-grid">
     <div class="form-field">
       <label for="lf-prenom">{s.form.field_prenom} <span class="req" aria-hidden="true">*</span></label>
@@ -98,7 +99,9 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
 </form>
 
 <style>
+  .form-heading { font-size: var(--step-3); margin-bottom: var(--s-4); }
   .lead-form {
+    scroll-margin-top: calc(var(--header-h) + 20px);
     background: var(--bg-2);
     border: 1px solid var(--line);
     border-radius: 4px;
@@ -204,13 +207,15 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       link.href = url.toString();
     });
     document.querySelectorAll<HTMLAnchorElement>('a[href="#contact"]').forEach((link) => {
-      link.addEventListener('click', () => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
         const type = link.dataset.leadType;
         const select = form.querySelector<HTMLSelectElement>('#lf-type');
         if (type && select) select.value = type;
         if (typeof (window as any).plausible === 'function') {
           (window as any).plausible('lead_cta_click', { props: { placement: link.dataset.leadCta || 'contact', lang: form.dataset.lang } });
         }
+        form.scrollIntoView({ behavior: 'instant', block: 'start' });
         form.querySelector<HTMLInputElement>('#lf-prenom')?.focus({ preventScroll: true });
       });
     });
