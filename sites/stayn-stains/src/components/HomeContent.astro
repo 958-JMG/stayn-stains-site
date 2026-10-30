@@ -67,6 +67,40 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
   </div>
 </section>
 
+<!-- CONTACT -->
+<section id="contact" class="section is-loose contact">
+  <div class="container is-wide contact-grid">
+    <div class="contact-intro reveal">
+      <span class="eyebrow">{s.contact.eyebrow}</span>
+      <h2>{s.contact.h2}</h2>
+      <p class="lead">
+        {s.contact.lead_body}<strong>{s.contact.lead_strong}</strong>
+      </p>
+    </div>
+    <div class="contact-text reveal">
+      <div class="contact-block">
+        <h4>{s.contact.address_h}</h4>
+        <address>
+          7-14 avenue Marcel Cachin<br />
+          93240 Stains
+        </address>
+      </div>
+      <div class="contact-block">
+        <h4>{s.contact.tel_h}</h4>
+        <p><a href="tel:+33763277878">07 63 27 78 78</a></p>
+      </div>
+      <div class="contact-block">
+        <h4>{s.contact.email_h}</h4>
+        <p><a href="mailto:contact@ozimmo.fr">contact@ozimmo.fr</a></p>
+      </div>
+    </div>
+    <div class="contact-form reveal">
+      <LeadForm lang={lang} />
+    </div>
+  </div>
+</section>
+
+
 <!-- OFFER -->
 <OfferShowcase deadline={deadline} lang={lang} />
 
@@ -197,38 +231,6 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact" class="section is-loose contact">
-  <div class="container is-wide contact-grid">
-    <div class="contact-intro reveal">
-      <span class="eyebrow">{s.contact.eyebrow}</span>
-      <h2>{s.contact.h2}</h2>
-      <p class="lead">
-        {s.contact.lead_body}<strong>{s.contact.lead_strong}</strong>
-      </p>
-    </div>
-    <div class="contact-text reveal">
-      <div class="contact-block">
-        <h4>{s.contact.address_h}</h4>
-        <address>
-          7-14 avenue Marcel Cachin<br />
-          93240 Stains
-        </address>
-      </div>
-      <div class="contact-block">
-        <h4>{s.contact.tel_h}</h4>
-        <p><a href="tel:+33763277878">07 63 27 78 78</a></p>
-      </div>
-      <div class="contact-block">
-        <h4>{s.contact.email_h}</h4>
-        <p><a href="mailto:contact@ozimmo.fr">contact@ozimmo.fr</a></p>
-      </div>
-    </div>
-    <div class="contact-form reveal">
-      <LeadForm lang={lang} />
-    </div>
-  </div>
-</section>
 
 <style>
   .appart-offer { color: var(--accent); margin-block: var(--s-4); line-height: 1.6; }
