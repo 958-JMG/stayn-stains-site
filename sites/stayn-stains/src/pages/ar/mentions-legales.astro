@@ -8,6 +8,8 @@ const s = t(lang);
 <Base title="الإشعار القانوني" description="الإشعار القانوني لموقع stayn-stains.fr" lang={lang}>
   <article class="legal-page">
     <div class="container is-default">
+      <section id="offre" class="legal-disclaimer"><h1>شروط عرض الخريف</h1><p>يبلغ الخصم 4,000 يورو لشقة T2 و6,000 يورو لشقة T3 و8,000 يورو لشقة T4 و10,000 يورو لشقة T5، بالإضافة إلى تحمّل رسوم الموثّق.</p><p>لكل حجز قبل 31 ديسمبر 2026، يستفيد أول خمسة حاجزين لشقة متاحة في برنامج Stay’n من خصم 2,000 يورو عن كل غرفة مع تحمّل رسوم الموثّق.</p><p>يؤكّد فريق المبيعات كتابياً مبلغ الخصم ورسوم الموثّق المشمولة وتوافر العرض قبل توقيع عقد الحجز. إرسال طلب معلومات لا يُعدّ حجزاً ولا يضمن الاستفادة من العرض.</p></section>
+      <section id="donnees" class="legal-disclaimer"><h2>بياناتكم الشخصية</h2><p>تُستخدم بيانات التواصل وطلبكم للردّ عليكم وترتيب تواصل مع فريق المبيعات. تُحفظ البيانات لمدة أقصاها 18 شهراً بعد آخر تفاعل. الموافقة على الرسائل التسويقية القصيرة اختيارية. لممارسة حقوق الاطّلاع والتصحيح والحذف، راسلوا contact@ozimmo.fr.</p></section>
       <div class="legal-disclaimer" role="note">
         <strong>{s.legal_disclaimer.h}</strong>
         <p>{s.legal_disclaimer.body}</p>
@@ -27,7 +29,7 @@ const s = t(lang);
     border-inline-start: 4px solid var(--accent);
     padding: var(--s-5);
     border-radius: 4px;
-    max-width: 60ch;
+    max-width: 60ch; margin-bottom: var(--s-5);
     margin-inline: auto;
   }
   .legal-disclaimer strong {

@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "wrangler:dev": "wrangler dev",
     "wrangler:deploy": "wrangler deploy",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

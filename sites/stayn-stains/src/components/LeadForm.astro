@@ -52,10 +52,10 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       <label for="lf-type">{s.form.field_type}</label>
       <select id="lf-type" name="type_logement">
         <option value="">{s.form.type_indiff}</option>
-        <option value="T2">{s.apparts.type_t2} — 168 000 € au lieu de 175 000 €</option>
-        <option value="T3">{s.apparts.type_t3} — 189 000 € au lieu de 198 000 €</option>
-        <option value="T4">{s.apparts.type_t4} — 223 700 € au lieu de 234 560 €</option>
-        <option value="T5">{s.apparts.type_t5} — 298 000 € au lieu de 312 000 €</option>
+        <option value="T2">{s.apparts.type_t2}</option>
+        <option value="T3">{s.apparts.type_t3}</option>
+        <option value="T4">{s.apparts.type_t4}</option>
+        <option value="T5">{s.apparts.type_t5}</option>
       </select>
     </div>
     <div class="form-field full">
@@ -66,10 +66,9 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
 
   <div class="form-consents">
     <label class="form-checkbox">
-      <input type="checkbox" name="consent_sms" required />
+      <input type="checkbox" name="consent_sms" />
       <span>
-        {s.form.consent_sms}
-        <span class="req" aria-hidden="true">*</span>
+        {s.form.consent_sms} {s.form.optional}
       </span>
     </label>
     <label class="form-checkbox">
@@ -192,6 +191,30 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       status.textContent = '';
     }
 
+    // Keep attribution in memory and in navigation links; no advertising cookie.
+    const params = new URLSearchParams(window.location.search);
+    const attribution: Record<string, string> = {};
+    for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+      const value = params.get(key);
+      if (value) attribution[key] = value.slice(0, 200);
+    }
+    document.querySelectorAll<HTMLAnchorElement>('.lang-switcher a').forEach((link) => {
+      const url = new URL(link.href);
+      Object.entries(attribution).forEach(([key, value]) => url.searchParams.set(key, value));
+      link.href = url.toString();
+    });
+    document.querySelectorAll<HTMLAnchorElement>('a[href="#contact"]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const type = link.dataset.leadType;
+        const select = form.querySelector<HTMLSelectElement>('#lf-type');
+        if (type && select) select.value = type;
+        if (typeof (window as any).plausible === 'function') {
+          (window as any).plausible('lead_cta_click', { props: { placement: link.dataset.leadCta || 'contact', lang: form.dataset.lang } });
+        }
+        form.querySelector<HTMLInputElement>('#lf-prenom')?.focus({ preventScroll: true });
+      });
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       clearStatus();
@@ -212,8 +235,10 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
         projet: ((fd.get('projet') as string) || '').trim(),
         consent_sms: !!fd.get('consent_sms'),
         consent_rgpd: !!fd.get('consent_rgpd'),
-        source: (fd.get('source') as string) || 'site:stayn-stains.fr',
+        source: [((fd.get('source') as string) || 'site:stayn-stains.fr'), 'stayn_automne_2026', (fd.get('lang') as string) || 'fr', attribution.utm_source, attribution.utm_content].filter(Boolean).join(' | '),
         lang: (fd.get('lang') as string) || 'fr',
+        campaign: 'stayn_automne_2026',
+        ...attribution,
       };
 
       let valid = true;
@@ -227,7 +252,7 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       const telOk = typeof payload.telephone === 'string' && payload.telephone.replace(/[^\d+]/g, '').length >= 9;
       if (!telOk) { setError(form.querySelector('#lf-tel')?.closest('.form-field') || null, true); valid = false; }
 
-      if (!payload.consent_sms || !payload.consent_rgpd) {
+      if (!payload.consent_rgpd) {
         showStatus('error', ERR.consent);
         valid = false;
       }

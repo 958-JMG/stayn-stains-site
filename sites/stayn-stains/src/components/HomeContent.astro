@@ -17,18 +17,15 @@ interface Props {
 }
 const {
   lang = DEFAULT_LOCALE,
-  deadline = '2026-12-21T23:59:59+01:00',
+  deadline = '2026-12-31T00:00:00+01:00',
 } = Astro.props;
 const s = t(lang);
 
-// Lots de l'offre d'automne — prix barrés réels.
-// À actualiser avec OZIMMO selon disponibilité.
-const apparts = [
-  { type: s.apparts.type_t2, prixOld: 175000, prix: 168000, lot: 'A32', save: 7000 },
-  { type: s.apparts.type_t3, prixOld: 198000, prix: 189000, lot: 'A23', save: 9000 },
-  { type: s.apparts.type_t4, prixOld: 234560, prix: 223700, lot: 'C11', save: 10860 },
-  { type: s.apparts.type_t5, prixOld: 312000, prix: 298000, lot: 'A51', save: 14000 },
-];
+const apparts = [2, 3, 4, 5].map((rooms) => ({
+  value: `T${rooms}`,
+  saving: rooms * 2000,
+  type: s.apparts[`type_t${rooms}` as 'type_t2'],
+}));
 
 const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/mentions-legales`;
 ---
@@ -53,11 +50,11 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
         {s.hero.lead_body}
       </p>
       <div class="hero-actions">
-        <a href="#offre" class="btn btn--primary btn--lg">
+        <a href="#contact" class="btn btn--primary btn--lg" data-lead-cta="hero">
           <span>{s.hero.cta_offer}</span>
           <span class="arrow" aria-hidden="true">→</span>
         </a>
-        <a href="#programme" class="btn btn--ghost btn--lg">
+        <a href="#offre" class="btn btn--ghost btn--lg">
           <span>{s.hero.cta_program}</span>
         </a>
       </div>
@@ -71,14 +68,7 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
 </section>
 
 <!-- OFFER -->
-<OfferShowcase
-  deadline={deadline}
-  remiseMax={15000}
-  reservatairesRestants={5}
-  bonusCuisine={4000}
-  lots={apparts}
-  lang={lang}
-/>
+<OfferShowcase deadline={deadline} lang={lang} />
 
 <!-- PROGRAMME -->
 <section id="programme" class="section">
@@ -160,15 +150,10 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
         <li class="appart card reveal">
           <div class="appart-head">
             <span class="appart-type">{a.type}</span>
-            <span class="appart-lot">Lot {a.lot}</span>
           </div>
-          <div class="appart-prices">
-            <span class="appart-old">{formatPrice(a.prixOld, lang)}</span>
-            <span class="appart-amount">{formatPrice(a.prix, lang)}</span>
-          </div>
+          <p class="appart-offer">{formatPrice(a.saving, lang)} {lang === 'fr' ? 'offerts' : lang === 'en' ? 'off' : 'خصم'}<br />{s.offer.notary}</p>
           <div class="appart-save-row">
-            <span class="appart-save">{formatPrice(-a.save, lang)}</span>
-            <a href="#contact" class="link-arrow">
+            <a href="#contact" class="link-arrow" data-lead-type={a.value} data-lead-cta="apartment">
               {s.apparts.receive_plan} <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -215,12 +200,14 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
 <!-- CONTACT -->
 <section id="contact" class="section is-loose contact">
   <div class="container is-wide contact-grid">
-    <div class="contact-text reveal">
+    <div class="contact-intro reveal">
       <span class="eyebrow">{s.contact.eyebrow}</span>
       <h2>{s.contact.h2}</h2>
       <p class="lead">
         {s.contact.lead_body}<strong>{s.contact.lead_strong}</strong>
       </p>
+    </div>
+    <div class="contact-text reveal">
       <div class="contact-block">
         <h4>{s.contact.address_h}</h4>
         <address>
@@ -244,6 +231,7 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
 </section>
 
 <style>
+  .appart-offer { color: var(--accent); margin-block: var(--s-4); line-height: 1.6; }
   /* HERO */
   .hero {
     position: relative;
@@ -489,6 +477,11 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
     gap: var(--s-6);
     align-items: start;
   }
+  .contact-intro { grid-area: intro; }
+  .contact-form { grid-area: form; }
+  .contact-text { grid-area: details; }
+  .contact-grid { grid-template-areas: "intro" "form" "details"; }
+  .contact-intro .lead { margin-top: var(--s-3); }
   .contact-text { padding-top: var(--s-2); }
   .contact-text .lead { margin-block: var(--s-3) var(--s-5); }
   .contact-block { margin-bottom: var(--s-4); }
@@ -519,7 +512,7 @@ const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales' : `/${lang}/ment
     border-bottom-color: var(--accent);
   }
   @media (min-width: 960px) {
-    .contact-grid { grid-template-columns: 1fr 1.2fr; gap: var(--s-8); }
+    .contact-grid { grid-template-columns: 1fr 1.2fr; grid-template-areas: "intro form" "details form"; gap: var(--s-5) var(--s-8); }
     .contact-text .lead { margin-block: var(--s-4) var(--s-6); }
     .contact-block { margin-bottom: var(--s-5); }
   }

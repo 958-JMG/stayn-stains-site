@@ -24,9 +24,6 @@ const remiseFinal = remiseLabel || s.urgency.remise_label;
   data-urgency-bar
   data-deadline={deadline}
   data-cd-prefix={s.urgency.cd_prefix}
-  data-cd-d={s.offer.cd_d}
-  data-cd-h={s.offer.cd_h}
-  data-cd-m={s.offer.cd_m}
   role="region"
   aria-label={s.urgency.region_label}
 >
@@ -38,11 +35,7 @@ const remiseFinal = remiseLabel || s.urgency.remise_label;
       <span class="sep" aria-hidden="true">·</span>
       <span>{s.urgency.text_prefix} <strong>{s.urgency.text_count_part(reservatairesRestants)}</strong></span>
     </p>
-    <div class="urgency-countdown" aria-live="polite">
-      <span class="urgency-cd-label">{s.urgency.cd_prefix}</span>
-      <span class="urgency-cd-value" data-countdown>—</span>
-    </div>
-    <a href="#contact" class="urgency-cta">
+    <a href="#contact" class="urgency-cta" data-lead-cta="banner">
       <span>{s.urgency.cta}</span>
       <span class="arrow" aria-hidden="true">→</span>
     </a>
@@ -184,7 +177,7 @@ const remiseFinal = remiseLabel || s.urgency.remise_label;
     .urgency-close { order: 4; }
   }
   @media (max-width: 540px) {
-    .urgency-cta span:first-child { display: none; }
+    .urgency-cta { font-size: 13px; }
     .urgency-cta { padding: 0.5rem 0.7rem; }
   }
 
@@ -198,59 +191,9 @@ const remiseFinal = remiseLabel || s.urgency.remise_label;
     const bar = document.querySelector<HTMLElement>('[data-urgency-bar]');
     if (!bar || bar.dataset.bound === 'true') return;
     bar.dataset.bound = 'true';
-
-    const deadline = bar.dataset.deadline;
-    const cd = bar.querySelector<HTMLElement>('[data-countdown]');
-    const close = bar.querySelector<HTMLButtonElement>('[data-urgency-close]');
-    const dLabel = bar.dataset.cdD || 'd';
-    const hLabel = bar.dataset.cdH || 'h';
-    const mLabel = bar.dataset.cdM || 'm';
-
-    if (!deadline || !cd) return;
-    const target = new Date(deadline).getTime();
-    if (Number.isNaN(target)) return;
-
-    function pad(n: number) { return String(Math.max(0, n)).padStart(2, '0'); }
-
-    function update() {
-      const diff = target - Date.now();
-      if (diff <= 0) {
-        bar?.setAttribute('hidden', '');
-        return;
-      }
-      const days = Math.floor(diff / 86_400_000);
-      const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-      const mins = Math.floor((diff % 3_600_000) / 60_000);
-      const secs = Math.floor((diff % 60_000) / 1_000);
-      cd!.textContent = `${days}j ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
-    }
-
-    update();
-    const id = window.setInterval(update, 1_000);
-
-    if (close) {
-      close.addEventListener('click', () => {
-        bar.classList.add('is-closed');
-        try { sessionStorage.setItem('urgency_closed', '1'); } catch {}
-      });
-    }
-
-    try {
-      if (sessionStorage.getItem('urgency_closed') === '1') {
-        bar.classList.add('is-closed');
-      }
-    } catch {}
-
-    document.addEventListener('astro:before-swap', () => {
-      window.clearInterval(id);
-    }, { once: true });
+    if (Date.now() >= new Date(bar.dataset.deadline || '').getTime()) bar.hidden = true;
+    bar.querySelector('[data-urgency-close]')?.addEventListener('click', () => { bar.hidden = true; });
   }
-
   bindUrgency();
-  document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLElement>('[data-urgency-bar]').forEach((el) => {
-      el.dataset.bound = 'false';
-    });
-    bindUrgency();
-  });
+  document.addEventListener('astro:page-load', bindUrgency);
 </script>

@@ -47,32 +47,22 @@ export interface Strings {
   offer: {
     section_label: string;
     tag: string;
-    title_prefix: string;
-    title_or: string;
-    lead_strong_first: (n: number) => string;
-    lead_body: string;
-    table_h: string;
-    table_lot: string;
-    table_before: string;
-    table_after: string;
-    table_save: string;
-    bonus_tag: string;
-    bonus_subtitle: string;
-    bonus_title: string;
-    bonus_body: string;
-    bullet1: (date: string) => string;
-    bullet2: string;
-    bullet3: string;
-    cta_lock: string;
+    amount: string;
+    per_room: string;
+    notary: string;
+    lead: string;
+    limit: string;
+    deadline: string;
+    cta: string;
+    note: string;
+    steps_title: string;
+    step1: string;
+    step2: string;
+    step3: string;
     fine_prefix: string;
     fine_link: string;
     fine_suffix: string;
-    counter_label: string;
-    cd_d: string;
-    cd_h: string;
-    cd_m: string;
-    cd_s: string;
-    stock_label: string;
+    expired: string;
   };
   programme: {
     eyebrow: string;
@@ -248,9 +238,8 @@ export interface Strings {
 
 const fr: Strings = {
   meta: {
-    title_home: "Stay'n — Devenez propriétaire à Stains, Paris à 15 min",
-    desc_home:
-      "58 logements neufs T2 à T5 à Stains (93). RE 2020, TVA 5,5 %, éligible PTZ. Offre d'automne : jusqu'à −15 000 € de remise immédiate. À partir de 168 000 € hors parking.",
+    title_home: "Stay’n à Stains — Offre d’automne : 2 000 € par pièce offerts",
+    desc_home: "Appartements neufs T2 à T5 à Stains. Pour toute réservation avant le 31/12/2026 : 2 000 € par pièce offerts + frais de notaire offerts, pour les 5 premiers réservataires. Recevez les plans et les disponibilités.",
     title_merci: "Merci pour votre demande",
     desc_merci:
       "Votre demande de documentation a bien été enregistrée. Un conseiller vous recontacte sous 24 heures ouvrées.",
@@ -266,63 +255,51 @@ const fr: Strings = {
     skip_to_main: "Aller au contenu",
     open_menu: "Ouvrir le menu",
     close_menu: "Fermer le menu",
-    docu_btn: "Documentation",
+    docu_btn: "Recevoir les plans",
     call_aria: "Appeler — 07 63 27 78 78",
   },
   urgency: {
     region_label: "Offre d'automne",
-    tag: "Offre d'automne · Démarrage des travaux",
-    remise_label: "Jusqu'à −15 000 € de remise immédiate",
-    text_prefix: "Sur",
-    text_count_part: () => "les lots encore disponibles",
+    tag: "Offre d’automne",
+    remise_label: "2 000 € par pièce + frais de notaire offerts",
+    text_prefix: "Pour les",
+    text_count_part: (n) => `${n} premiers réservataires · avant le 31/12/2026`,
     cd_prefix: "Plus que",
-    cta: "J'en profite",
+    cta: "Recevoir l’offre",
     close_aria: "Fermer le bandeau",
   },
   hero: {
     eyebrow: "Programme neuf · Stains 93240",
     works: "Démarrage des travaux",
-    h1_line1: "C'est le moment de passer",
-    h1_line2: "de locataire à propriétaire.",
-    lead_strong: "Stop aux loyers perdus.",
-    lead_body:
-      "58 logements T2 à T5, à 15 minutes de Paris. Avec l'offre d'automne, devenez propriétaire à partir de 168 000 € au lieu de 175 000 €.",
-    cta_offer: "Voir l'offre d'automne",
-    cta_program: "Découvrir le programme",
+    h1_line1: "Cet automne, donnez vie",
+    h1_line2: "à votre projet immobilier.",
+    lead_strong: "2 000 € par pièce offerts + frais de notaire offerts.",
+    lead_body: " Pour toute réservation avant le 31/12/2026, offre réservée aux 5 premiers réservataires. Découvrez les appartements neufs T2 à T5 de Stay’n à Stains.",
+    cta_offer: "Recevoir les plans et l’offre",
+    cta_program: "Découvrir l’offre",
     bullet_re2020: "RE 2020",
-    bullet_tva: "TVA réduite 5,5 %",
-    bullet_ptz: "Éligible PTZ",
+    bullet_tva: "TVA 5,5 % sous conditions",
+    bullet_ptz: "PTZ sous conditions",
   },
   offer: {
-    section_label: "Offre d'automne",
-    tag: "Offre d'automne · Démarrage des travaux",
-    title_prefix: "Jusqu'à",
-    title_or: "de remise immédiate",
-    lead_strong_first: () => "",
-    lead_body: "Sur les lots encore disponibles, voici quelques exemples :",
-    table_h: "Exemples de lots disponibles",
-    table_lot: "Lot",
-    table_before: "Prix initial",
-    table_after: "Prix d'automne",
-    table_save: "Vous économisez",
-    bonus_tag: "Pour le plus rapide",
-    bonus_subtitle: "Offre limitée aux 5 premiers réservataires",
-    bonus_title: "−4 000 € sur votre cuisine",
-    bonus_body: "Bon d'achat de 4 000 € à valoir sur votre cuisine équipée, en plus de la remise sur votre logement.",
-    bullet1: (date) =>
-      `Choisissez votre lot et signez le contrat de réservation avant le ${date}.`,
-    bullet2: "La remise est appliquée au prix TTC de votre logement.",
-    bullet3: "Cumulable avec la TVA 5,5 % et le PTZ.",
-    cta_lock: "Bloquer mon logement",
+    section_label: "Offre d’automne",
+    tag: "Offre d’automne · Stay’n à Stains",
+    amount: "2 000 €",
+    per_room: "offerts par pièce",
+    notary: "+ frais de notaire offerts",
+    lead: "Un avantage concret pour votre appartement neuf, du T2 au T5.",
+    limit: "Offre réservée aux 5 premiers réservataires",
+    deadline: "Pour toute réservation avant le 31/12/2026",
+    cta: "Vérifier les disponibilités",
+    note: "La demande d’information est sans engagement et ne constitue pas une réservation.",
+    steps_title: "Votre projet commence ici",
+    step1: "Choisissez le type d’appartement qui vous intéresse.",
+    step2: "Recevez les plans, les prix et les conditions de l’offre.",
+    step3: "Échangez avec un conseiller pour préparer votre réservation.",
     fine_prefix: "Voir les ",
-    fine_link: "conditions complètes",
-    fine_suffix: ". Offre dans la limite des stocks disponibles.",
-    counter_label: "Fin de l'offre",
-    cd_d: "jours",
-    cd_h: "heures",
-    cd_m: "minutes",
-    cd_s: "secondes",
-    stock_label: "lots disponibles",
+    fine_link: "conditions de l’offre",
+    fine_suffix: ". Sous réserve de disponibilité et de l’attribution de l’offre aux 5 premiers réservataires.",
+    expired: "Cette offre est terminée. Contactez-nous pour connaître les disponibilités actuelles.",
   },
   programme: {
     eyebrow: "Pourquoi Stay'n ?",
@@ -339,31 +316,30 @@ const fr: Strings = {
   },
   interior: {
     eyebrow: "Les appartements",
-    h2: "Lumineux, bien conçus, prêts à vivre.",
+    h2: "Un appartement où imaginer la suite.",
     lead_strong: "Du 2 au 5 pièces.",
     lead_body:
       " Cuisine ouverte sur séjour, agencement optimal, balcon ou terrasse, sécurité et économies d'énergie. Des espaces pensés pour la vraie vie.",
-    cta: "Télécharger la brochure",
+    cta: "Recevoir la brochure et les plans",
     img_alt: "Vue intérieure d'un logement Stay'n — séjour lumineux et cuisine ouverte",
   },
   apparts: {
-    eyebrow: "Grilles de prix",
-    h2: "Du T2 au T5, à partir de 175 000 €.",
-    lead: "Prix hors parking, premiers lots disponibles.",
+    eyebrow: "Quel appartement pour votre projet ?",
+    h2: "Du T2 au T5, trouvez votre espace.",
+    lead: "Choisissez une typologie : un conseiller vous transmettra les plans, les prix et les disponibilités à jour.",
     from_label: "à partir de",
     receive_plan: "Recevoir le plan",
-    legal_note_prefix:
-      "* Prix indicatifs susceptibles d'évoluer en fonction de la disponibilité des lots, non contractuels — voir ",
+    legal_note_prefix: "Plans, prix et disponibilité des logements à confirmer auprès de l’espace de vente. Voir les ",
     legal_link: "conditions complètes",
     surface_t2: "à partir de 41 m²",
     surface_t3: "à partir de 60 m²",
     surface_t4: "à partir de 78 m²",
     surface_t5: "à partir de 96 m²",
     hors_parking: "hors parking",
-    type_t2: "T2",
-    type_t3: "T3",
-    type_t4: "T4",
-    type_t5: "T5",
+    type_t2: "T2 · 2 pièces",
+    type_t3: "T3 · 3 pièces",
+    type_t4: "T4 · 4 pièces",
+    type_t5: "T5 · 5 pièces",
   },
   localisation: {
     eyebrow: "Localisation",
@@ -426,11 +402,10 @@ const fr: Strings = {
     poi_shops_sub: "Centre-ville de Stains",
   },
   contact: {
-    eyebrow: "Recevoir la documentation",
-    h2: "Prenez rendez-vous avec un conseiller.",
-    lead_strong: "24 h ouvrées.",
-    lead_body:
-      "Brochure complète, plans des appartements, simulation TVA 5,5 % et PTZ. Un conseiller vous recontacte sous ",
+    eyebrow: "Plans · Prix · Offre d’automne",
+    h2: "Recevez les plans et votre offre personnalisée.",
+    lead_strong: "Sans engagement.",
+    lead_body: "Indiquez-nous l’appartement qui vous intéresse. Un conseiller vous présente les disponibilités et les conditions de l’offre. ",
     address_h: "Espace de vente",
     tel_h: "Téléphone",
     email_h: "Email",
@@ -441,11 +416,11 @@ const fr: Strings = {
     field_email: "Email",
     field_tel: "Téléphone",
     field_type: "Type de logement souhaité",
-    field_projet: "Votre projet",
+    field_projet: "Précisez votre demande",
     optional: "(optionnel)",
     placeholder_email: "vous@exemple.fr",
     placeholder_tel: "06 12 34 56 78",
-    placeholder_projet: "Résidence principale, investissement locatif, primo-accession…",
+    placeholder_projet: "Un appartement vous intéresse ? Souhaitez-vous être rappelé à un moment particulier ?",
     type_indiff: "— Indifférent / non décidé —",
     tel_help: "Pour qu'un conseiller vous recontacte rapidement.",
     consent_sms:
@@ -453,7 +428,7 @@ const fr: Strings = {
     consent_rgpd_prefix: "J'ai pris connaissance des ",
     consent_rgpd_link: "mentions légales et de la politique de confidentialité",
     consent_rgpd_suffix: " et j'accepte le traitement de mes données pour répondre à ma demande.",
-    submit: "Recevoir la documentation",
+    submit: "Recevoir les plans et l’offre",
     submitting: "Envoi en cours…",
     rgpd_note_prefix:
       "Vos données sont conservées 18 mois et ne sont jamais cédées. Droits d'accès et de suppression : ",
@@ -463,7 +438,7 @@ const fr: Strings = {
     err_nom: "Veuillez renseigner votre nom.",
     err_email: "Adresse email invalide.",
     err_tel: "Numéro de téléphone invalide.",
-    err_consent: "Merci d'accepter les deux cases de consentement pour pouvoir vous recontacter.",
+    err_consent: "Merci d’accepter le traitement de vos données pour répondre à votre demande.",
     err_required_check: "Merci de vérifier les champs en surbrillance.",
     err_generic: "L'envoi a échoué. Vous pouvez réessayer ou nous appeler au 07 63 27 78 78.",
     success: "Merci, votre demande a bien été enregistrée.",
@@ -483,9 +458,8 @@ const fr: Strings = {
   merci: {
     eyebrow: "Demande enregistrée",
     h1: "Merci, votre demande est bien reçue.",
-    lead_strong_24h: "24 heures ouvrées",
-    lead_body:
-      "Un conseiller Stay'n vous recontacte sous {x} au numéro que vous avez indiqué. Il vous fera parvenir la brochure complète, les plans des appartements, et fera le point sur les conditions TVA 5,5 % et PTZ.",
+    lead_strong_24h: "les plans, les prix et les disponibilités",
+    lead_body: "Un conseiller Stay’n vous recontactera avec {x} et les conditions de l’offre d’automne. Votre demande est sans engagement et ne vaut pas réservation.",
     block1_h: "Besoin de nous parler tout de suite ?",
     block1_p: "L'espace de vente est joignable du lundi au samedi.",
     block2_h: "Préparer votre venue",
@@ -508,9 +482,8 @@ const fr: Strings = {
 
 const en: Strings = {
   meta: {
-    title_home: "Stay'n — Become a homeowner in Stains, 15 min from Paris",
-    desc_home:
-      "58 brand-new apartments (1- to 4-bedroom) in Stains (Greater Paris). RE 2020 standard, reduced 5.5% VAT, PTZ-eligible. Autumn offer: up to −€15,000 instant discount. From €168,000 (excl. parking).",
+    title_home: "Stay’n in Stains — Autumn offer: €2,000 off per room",
+    desc_home: "New T2–T5 apartments in Stains. Reserve before 31 December 2026: €2,000 off per room plus notary fees covered, for the first 5 buyers to reserve. Request floor plans and availability.",
     title_merci: "Thank you for your enquiry",
     desc_merci:
       "Your documentation request has been received. A consultant will get back to you within 24 business hours.",
@@ -526,62 +499,51 @@ const en: Strings = {
     skip_to_main: "Skip to content",
     open_menu: "Open menu",
     close_menu: "Close menu",
-    docu_btn: "Brochure",
+    docu_btn: "Get floor plans",
     call_aria: "Call — +33 7 63 27 78 78",
   },
   urgency: {
     region_label: "Autumn offer",
-    tag: "Autumn offer · Construction underway",
-    remise_label: "Up to −€15,000 instant discount",
-    text_prefix: "On",
-    text_count_part: () => "available units",
+    tag: "Autumn offer",
+    remise_label: "€2,000 off per room + notary fees covered",
+    text_prefix: "For the",
+    text_count_part: (n) => `first ${n} buyers to reserve · before 31 Dec 2026`,
     cd_prefix: "Only",
-    cta: "Claim now",
+    cta: "Get the offer",
     close_aria: "Close the banner",
   },
   hero: {
     eyebrow: "New development · Stains 93240",
     works: "Construction underway",
-    h1_line1: "Stop renting,",
-    h1_line2: "start owning.",
-    lead_strong: "No more rent disappearing each month.",
-    lead_body:
-      "58 brand-new 1- to 4-bedroom apartments, 15 minutes from central Paris. With the autumn offer, become a homeowner from €168,000 instead of €175,000.",
-    cta_offer: "See the autumn offer",
-    cta_program: "Discover the project",
+    h1_line1: "This autumn, make room",
+    h1_line2: "for your next chapter.",
+    lead_strong: "€2,000 off per room + notary fees covered.",
+    lead_body: " Reserve before 31 December 2026. Offer limited to the first 5 buyers to reserve. Discover Stay’n’s new T2–T5 apartments in Stains.",
+    cta_offer: "Get floor plans and the offer",
+    cta_program: "Explore the offer",
     bullet_re2020: "RE 2020 standard",
-    bullet_tva: "Reduced 5.5% VAT",
-    bullet_ptz: "PTZ-eligible",
+    bullet_tva: "5.5% VAT, subject to eligibility",
+    bullet_ptz: "PTZ, subject to eligibility",
   },
   offer: {
     section_label: "Autumn offer",
-    tag: "Autumn offer · Construction underway",
-    title_prefix: "Up to",
-    title_or: "instant discount",
-    lead_strong_first: () => "",
-    lead_body: "On the still-available units, a few examples below:",
-    table_h: "Available units · examples",
-    table_lot: "Unit",
-    table_before: "List price",
-    table_after: "Autumn price",
-    table_save: "You save",
-    bonus_tag: "For the quickest",
-    bonus_subtitle: "Limited to the first 5 buyers",
-    bonus_title: "−€4,000 on your kitchen",
-    bonus_body: "€4,000 voucher towards your fitted kitchen, on top of the apartment discount.",
-    bullet1: (date) => `Pick your unit and sign the reservation contract before ${date}.`,
-    bullet2: "The discount is applied to the inc. VAT price of your apartment.",
-    bullet3: "Stackable with reduced 5.5% VAT and PTZ.",
-    cta_lock: "Reserve my apartment",
+    tag: "Autumn offer · Stay’n in Stains",
+    amount: "€2,000",
+    per_room: "off per room",
+    notary: "+ notary fees covered",
+    lead: "A concrete saving on your new apartment, from T2 to T5.",
+    limit: "Limited to the first 5 buyers to reserve",
+    deadline: "For reservations made before 31 December 2026",
+    cta: "Check availability",
+    note: "Requesting information is free of commitment and does not reserve an apartment.",
+    steps_title: "Your next steps",
+    step1: "Choose the apartment type you are interested in.",
+    step2: "Receive floor plans, prices and the offer terms.",
+    step3: "Talk to an adviser to prepare your reservation.",
     fine_prefix: "See the ",
-    fine_link: "full conditions",
-    fine_suffix: ". Subject to availability.",
-    counter_label: "Offer ends",
-    cd_d: "days",
-    cd_h: "hours",
-    cd_m: "minutes",
-    cd_s: "seconds",
-    stock_label: "available units",
+    fine_link: "offer terms",
+    fine_suffix: ". Subject to availability and the offer being allocated to the first 5 buyers to reserve.",
+    expired: "This offer has ended. Contact us for current availability.",
   },
   programme: {
     eyebrow: "Why Stay'n?",
@@ -598,31 +560,30 @@ const en: Strings = {
   },
   interior: {
     eyebrow: "The apartments",
-    h2: "Bright, well-designed, ready to live in.",
+    h2: "A place to picture your next chapter.",
     lead_strong: "From 1- to 4-bedroom.",
     lead_body:
       " Open-plan kitchen, optimal layout, balcony or terrace, security and energy savings. Spaces designed for real life.",
-    cta: "Download the brochure",
+    cta: "Get the brochure and floor plans",
     img_alt: "Interior view of a Stay'n apartment — bright living room and open kitchen",
   },
   apparts: {
-    eyebrow: "Pricing",
-    h2: "From 1- to 4-bedroom, starting at €175,000.",
-    lead: "Prices excluding parking, first available units.",
+    eyebrow: "Find your apartment",
+    h2: "From T2 to T5, find your space.",
+    lead: "Choose an apartment type to receive floor plans, current prices and availability from an adviser.",
     from_label: "starting from",
     receive_plan: "Get the floor plan",
-    legal_note_prefix:
-      "* Indicative prices, subject to change based on availability, non-contractual — see ",
+    legal_note_prefix: "Floor plans, prices and availability must be confirmed with the sales team. See the ",
     legal_link: "full conditions",
     surface_t2: "from 41 sqm",
     surface_t3: "from 60 sqm",
     surface_t4: "from 78 sqm",
     surface_t5: "from 96 sqm",
     hors_parking: "excl. parking",
-    type_t2: "1-bdr",
-    type_t3: "2-bdr",
-    type_t4: "3-bdr",
-    type_t5: "4-bdr",
+    type_t2: "T2 · 2 rooms",
+    type_t3: "T3 · 3 rooms",
+    type_t4: "T4 · 4 rooms",
+    type_t5: "T5 · 5 rooms",
   },
   localisation: {
     eyebrow: "Location",
@@ -685,11 +646,10 @@ const en: Strings = {
     poi_shops_sub: "Stains town centre",
   },
   contact: {
-    eyebrow: "Get the brochure",
-    h2: "Book a meeting with a consultant.",
-    lead_strong: "24 business hours.",
-    lead_body:
-      "Full brochure, floor plans, simulation of the 5.5% VAT and PTZ. A consultant will get back to you within ",
+    eyebrow: "Floor plans · Prices · Autumn offer",
+    h2: "Get floor plans and your personalised offer.",
+    lead_strong: "No commitment.",
+    lead_body: "Tell us which apartment interests you. An adviser will explain availability and the offer terms. ",
     address_h: "Sales office",
     tel_h: "Phone",
     email_h: "Email",
@@ -700,11 +660,11 @@ const en: Strings = {
     field_email: "Email",
     field_tel: "Phone",
     field_type: "Apartment type",
-    field_projet: "Your project",
+    field_projet: "Tell us what you need",
     optional: "(optional)",
     placeholder_email: "you@example.com",
     placeholder_tel: "+33 6 12 34 56 78",
-    placeholder_projet: "Primary residence, buy-to-let, first-time buyer…",
+    placeholder_projet: "Interested in a particular apartment? Let us know a convenient time to call.",
     type_indiff: "— No preference / undecided —",
     tel_help: "So a consultant can call you back quickly.",
     consent_sms:
@@ -712,7 +672,7 @@ const en: Strings = {
     consent_rgpd_prefix: "I have read the ",
     consent_rgpd_link: "legal notice and privacy policy",
     consent_rgpd_suffix: " and I consent to my data being processed to respond to my request.",
-    submit: "Get the brochure",
+    submit: "Get floor plans and the offer",
     submitting: "Sending…",
     rgpd_note_prefix:
       "Your data is kept for 18 months max and never sold. Access and deletion rights: ",
@@ -722,7 +682,7 @@ const en: Strings = {
     err_nom: "Please enter your last name.",
     err_email: "Invalid email address.",
     err_tel: "Invalid phone number.",
-    err_consent: "Please accept both consent boxes so we can get back to you.",
+    err_consent: "Please agree to the processing of your data so we can respond to your enquiry.",
     err_required_check: "Please check the highlighted fields.",
     err_generic:
       "Submission failed. Please try again or call us at +33 7 63 27 78 78.",
@@ -743,9 +703,8 @@ const en: Strings = {
   merci: {
     eyebrow: "Request received",
     h1: "Thank you, your request is in.",
-    lead_strong_24h: "24 business hours",
-    lead_body:
-      "A Stay'n consultant will call you within {x} at the number you provided. They will also send you the full brochure, floor plans, and walk you through the 5.5% VAT and PTZ conditions.",
+    lead_strong_24h: "floor plans, prices and availability",
+    lead_body: "A Stay’n adviser will contact you with {x} and the autumn offer terms. Your enquiry is free of commitment and does not constitute a reservation.",
     block1_h: "Need to talk right now?",
     block1_p: "The sales office is open Monday through Saturday.",
     block2_h: "Plan your visit",
@@ -763,15 +722,14 @@ const en: Strings = {
   legal_disclaimer: {
     h: "About the legal notice",
     body:
-      "Due to its contractual nature, the legal notice and offer conditions are available in French only.",
+      "The full legal notice is available in French. The offer terms are summarised above.",
   },
 };
 
 const ar: Strings = {
   meta: {
-    title_home: "Stay'n — تَملَّك منزلك في ستان، ⁦15 دقيقة⁩ من باريس",
-    desc_home:
-      "58 شقة جديدة من غرفتين إلى خمس غرف في ستان (شمال باريس). معيار RE 2020، ضريبة قيمة مضافة مخفّضة 5.5٪، مؤهَّل لقرض PTZ. عرض الخريف: حتى ⁦−15 000 €⁩ خصم فوري. ابتداءً من ⁦168 000 €⁩ باستثناء موقف السيارة.",
+    title_home: "Stay’n في ستان — عرض الخريف: خصم 2,000 يورو عن كل غرفة",
+    desc_home: "شقق جديدة من T2 إلى T5 في ستان. للحجز قبل 31 ديسمبر 2026: خصم 2,000 يورو عن كل غرفة مع تحمّل رسوم الموثّق، لأول خمسة حاجزين. اطلبوا المخططات والتوافر.",
     title_merci: "شكراً على طلبكم",
     desc_merci:
       "تم استلام طلبكم للحصول على الوثائق. سيتواصل معكم مستشار خلال 24 ساعة عمل.",
@@ -787,62 +745,51 @@ const ar: Strings = {
     skip_to_main: "الانتقال إلى المحتوى",
     open_menu: "فتح القائمة",
     close_menu: "إغلاق القائمة",
-    docu_btn: "الوثائق",
+    docu_btn: "اطلبوا المخططات",
     call_aria: "اتصلوا — 78 78 27 63 7 33+",
   },
   urgency: {
     region_label: "عرض الخريف",
-    tag: "عرض الخريف · بدء أعمال البناء",
-    remise_label: "حتى ⁦−15 000 €⁩ خصم فوري",
-    text_prefix: "على",
-    text_count_part: () => "العقارات المتاحة",
+    tag: "عرض الخريف",
+    remise_label: "خصم 2,000 يورو عن كل غرفة + رسوم الموثّق علينا",
+    text_prefix: "",
+    text_count_part: (n) => `لأول ${n} حاجزين · قبل 31 ديسمبر 2026`,
     cd_prefix: "تبقّى",
-    cta: "أستفيد من العرض",
+    cta: "اطلبوا العرض",
     close_aria: "إغلاق الشريط",
   },
   hero: {
     eyebrow: "مشروع جديد · ستان 93240",
     works: "بدء أعمال البناء",
-    h1_line1: "حان الوقت للانتقال",
-    h1_line2: "من الإيجار إلى التَملُّك.",
-    lead_strong: "كفى ضياعاً للإيجارات.",
-    lead_body:
-      "58 شقة جديدة من غرفتين إلى خمس غرف، ⁦15 دقيقة⁩ من باريس. مع عرض الخريف، تَملَّك منزلك ابتداءً من ⁦168 000 €⁩ بدلاً من ⁦175 000 €⁩.",
-    cta_offer: "اطّلعوا على عرض الخريف",
-    cta_program: "اكتشفوا المشروع",
+    h1_line1: "هذا الخريف، اقتربوا",
+    h1_line2: "من منزل أحلامكم.",
+    lead_strong: "خصم 2,000 يورو عن كل غرفة مع تحمّل رسوم الموثّق.",
+    lead_body: " لكل حجز قبل 31 ديسمبر 2026، لأول خمسة حاجزين فقط. اكتشفوا شقق Stay’n الجديدة من T2 إلى T5 في ستان.",
+    cta_offer: "اطلبوا المخططات والعرض",
+    cta_program: "اكتشفوا العرض",
     bullet_re2020: "معيار RE 2020",
-    bullet_tva: "ضريبة قيمة مضافة 5.5٪",
-    bullet_ptz: "مؤهَّل لقرض PTZ",
+    bullet_tva: "ضريبة 5.5٪ وفق الشروط",
+    bullet_ptz: "قرض PTZ وفق الشروط",
   },
   offer: {
     section_label: "عرض الخريف",
-    tag: "عرض الخريف · بدء أعمال البناء",
-    title_prefix: "حتى",
-    title_or: "خصم فوري",
-    lead_strong_first: () => "",
-    lead_body: "على العقارات المتاحة، إليكم بعض الأمثلة:",
-    table_h: "أمثلة من العقارات المتاحة",
-    table_lot: "العقار",
-    table_before: "السعر الأصلي",
-    table_after: "سعر الخريف",
-    table_save: "توفِّرون",
-    bonus_tag: "للأسرع",
-    bonus_subtitle: "العرض محدود للحاجزين الخمسة الأوائل",
-    bonus_title: "خصم ⁦4 000 €⁩ على مطبخكم",
-    bonus_body: "قسيمة بقيمة ⁦4 000 €⁩ صالحة على مطبخكم المجهَّز، تُضاف إلى خصم السكن.",
-    bullet1: (date) => `اختاروا العقار ووقِّعوا عقد الحجز قبل ${date}.`,
-    bullet2: "يُطبَّق الخصم على السعر الإجمالي (شامل الضريبة) لشقَّتكم.",
-    bullet3: "قابل للجمع مع ضريبة 5.5٪ وقرض PTZ.",
-    cta_lock: "أحجز شقَّتي",
-    fine_prefix: "اطَّلعوا على ",
-    fine_link: "الشروط الكاملة",
-    fine_suffix: ". في حدود المخزون المتاح.",
-    counter_label: "ينتهي العرض في",
-    cd_d: "أيام",
-    cd_h: "ساعات",
-    cd_m: "دقائق",
-    cd_s: "ثوانٍ",
-    stock_label: "عقارات متاحة",
+    tag: "عرض الخريف · Stay’n في ستان",
+    amount: "2,000 يورو",
+    per_room: "خصم عن كل غرفة",
+    notary: "+ رسوم الموثّق علينا",
+    lead: "ميزة ملموسة لشقتكم الجديدة، من T2 إلى T5.",
+    limit: "العرض مخصّص لأول خمسة حاجزين",
+    deadline: "لكل حجز قبل 31 ديسمبر 2026",
+    cta: "تحقّقوا من الشقق المتاحة",
+    note: "طلب المعلومات دون أي التزام، ولا يُعدّ حجزاً لشقة.",
+    steps_title: "خطواتكم نحو المنزل الجديد",
+    step1: "اختاروا نوع الشقة الذي يهمّكم.",
+    step2: "احصلوا على المخططات والأسعار وشروط العرض.",
+    step3: "تحدّثوا مع مستشار للتحضير لحجزكم.",
+    fine_prefix: "اطّلعوا على ",
+    fine_link: "شروط العرض",
+    fine_suffix: ". بحسب التوافر وتخصيص العرض لأول خمسة حاجزين.",
+    expired: "انتهى هذا العرض. تواصلوا معنا لمعرفة الشقق المتاحة حالياً.",
   },
   programme: {
     eyebrow: "لماذا Stay'n؟",
@@ -859,31 +806,30 @@ const ar: Strings = {
   },
   interior: {
     eyebrow: "الشقق",
-    h2: "مضيئة، مدروسة، جاهزة للسكن.",
+    h2: "شقة تتخيّلون فيها حياتكم المقبلة.",
     lead_strong: "من غرفتين إلى خمس غرف.",
     lead_body:
       " مطبخ مفتوح على الصالة، توزيع أمثل، شرفة أو تراس، أمن واقتصاد في الطاقة. مساحات مصمَّمة للحياة الواقعية.",
-    cta: "تحميل الكتيِّب",
+    cta: "اطلبوا الكتيّب والمخططات",
     img_alt: "منظر داخلي لشقّة Stay'n — صالة مضيئة ومطبخ مفتوح",
   },
   apparts: {
-    eyebrow: "الأسعار",
-    h2: "من غرفتين إلى خمس غرف، ابتداءً من ⁦168 000 €⁩.",
-    lead: "أسعار باستثناء موقف السيارة، الوحدات المتاحة الأولى.",
+    eyebrow: "أي شقة تناسب مشروعكم؟",
+    h2: "من T2 إلى T5، اختاروا مساحتكم.",
+    lead: "اختاروا نوع الشقة ليزوّدكم مستشار بالمخططات والأسعار والتوافر الحالي.",
     from_label: "ابتداءً من",
     receive_plan: "استلام المخطّط",
-    legal_note_prefix:
-      "* أسعار إرشاديّة قابلة للتغيير حسب التوفُّر، غير تعاقديّة — انظر ",
+    legal_note_prefix: "يُرجى تأكيد المخططات والأسعار والتوافر مع فريق المبيعات. اطّلعوا على ",
     legal_link: "الشروط الكاملة",
     surface_t2: "من 41 م²",
     surface_t3: "من 60 م²",
     surface_t4: "من 78 م²",
     surface_t5: "من 96 م²",
     hors_parking: "بدون موقف",
-    type_t2: "غرفتان",
-    type_t3: "ثلاث غرف",
-    type_t4: "أربع غرف",
-    type_t5: "خمس غرف",
+    type_t2: "T2 · غرفتان",
+    type_t3: "T3 · 3 غرف",
+    type_t4: "T4 · 4 غرف",
+    type_t5: "T5 · 5 غرف",
   },
   localisation: {
     eyebrow: "الموقع",
@@ -946,11 +892,10 @@ const ar: Strings = {
     poi_shops_sub: "وسط مدينة ستان",
   },
   contact: {
-    eyebrow: "اطلبوا الوثائق",
-    h2: "حدِّدوا موعداً مع مستشار.",
-    lead_strong: "24 ساعة عمل.",
-    lead_body:
-      "كتيّب كامل، مخطّطات الشقق، محاكاة لضريبة 5.5٪ وقرض PTZ. سيتواصل معكم مستشار خلال ",
+    eyebrow: "مخططات · أسعار · عرض الخريف",
+    h2: "احصلوا على المخططات والعرض الخاص بكم.",
+    lead_strong: "دون أي التزام.",
+    lead_body: "أخبرونا بالشقة التي تهمّكم. سيشرح لكم مستشار التوافر وشروط العرض. ",
     address_h: "مكتب المبيعات",
     tel_h: "الهاتف",
     email_h: "البريد الإلكتروني",
@@ -961,11 +906,11 @@ const ar: Strings = {
     field_email: "البريد الإلكتروني",
     field_tel: "الهاتف",
     field_type: "نوع السكن المطلوب",
-    field_projet: "مشروعكم",
+    field_projet: "أخبرونا بما تحتاجون إليه",
     optional: "(اختياري)",
     placeholder_email: "exemple@vous.fr",
     placeholder_tel: "+33 6 12 34 56 78",
-    placeholder_projet: "إقامة رئيسيّة، استثمار، أوّل اقتناء…",
+    placeholder_projet: "هل تهمّكم شقة معيّنة؟ حدّدوا الوقت المناسب للتواصل معكم.",
     type_indiff: "— لا تفضيل / لم أحدِّد —",
     tel_help: "ليتواصل معكم مستشار بسرعة.",
     consent_sms:
@@ -973,7 +918,7 @@ const ar: Strings = {
     consent_rgpd_prefix: "اطّلعتُ على ",
     consent_rgpd_link: "الإشعار القانوني وسياسة الخصوصيّة",
     consent_rgpd_suffix: " وأوافق على معالجة بياناتي للردّ على طلبي.",
-    submit: "اطلبوا الوثائق",
+    submit: "اطلبوا المخططات والعرض",
     submitting: "جاري الإرسال…",
     rgpd_note_prefix:
       "تُحفظ بياناتكم 18 شهراً كحدّ أقصى ولا تُباع أبداً. حقّ الوصول والحذف: ",
@@ -983,7 +928,7 @@ const ar: Strings = {
     err_nom: "يرجى إدخال اسم العائلة.",
     err_email: "بريد إلكتروني غير صحيح.",
     err_tel: "رقم هاتف غير صحيح.",
-    err_consent: "يرجى الموافقة على المربّعَين كي نتمكّن من التواصل معكم.",
+    err_consent: "يرجى الموافقة على معالجة بياناتكم للردّ على طلبكم.",
     err_required_check: "يرجى مراجعة الحقول المعلَّمة.",
     err_generic:
       "فشل الإرسال. يمكنكم المحاولة مجدَّداً أو الاتصال بنا على 78 78 27 63 7 33+.",
@@ -1004,9 +949,8 @@ const ar: Strings = {
   merci: {
     eyebrow: "تمّ استلام الطلب",
     h1: "شكراً، تمّ استلام طلبكم.",
-    lead_strong_24h: "24 ساعة عمل",
-    lead_body:
-      "سيتّصل بكم مستشار Stay'n خلال {x} على الرقم الذي قدّمتموه. وسيرسل لكم أيضاً الكتيّب الكامل ومخطّطات الشقق، ويقدّم لكم نظرة عامة على شروط ضريبة 5.5٪ وقرض PTZ.",
+    lead_strong_24h: "المخططات والأسعار والتوافر",
+    lead_body: "سيتواصل معكم مستشار Stay’n لتزويدكم بـ{x} وشروط عرض الخريف. طلبكم دون أي التزام ولا يُعدّ حجزاً.",
     block1_h: "تريدون التحدّث الآن؟",
     block1_p: "مكتب المبيعات متاح من الإثنين إلى السبت.",
     block2_h: "خطّطوا لزيارتكم",
@@ -1024,7 +968,7 @@ const ar: Strings = {
   legal_disclaimer: {
     h: "بشأن الإشعار القانوني",
     body:
-      "نظراً لطبيعتها التعاقديّة، تتوفّر الإشعارات القانونيّة وشروط العرض باللغة الفرنسيّة فقط.",
+      "يتوفّر الإشعار القانوني الكامل باللغة الفرنسيّة. تجدون أعلاه ملخّصاً لشروط العرض.",
   },
 };
 

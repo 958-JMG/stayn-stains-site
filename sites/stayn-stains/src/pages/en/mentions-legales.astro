@@ -8,6 +8,8 @@ const s = t(lang);
 <Base title="Legal notice" description="Legal notice for stayn-stains.fr." lang={lang}>
   <article class="legal-page">
     <div class="container is-default">
+      <section id="offre" class="legal-disclaimer"><h1>Autumn offer terms</h1><p>The discount is €4,000 for a T2, €6,000 for a T3, €8,000 for a T4 and €10,000 for a T5, plus notary fees covered.</p><p>For a reservation made before 31 December 2026, the first 5 buyers to reserve an available Stay’n apartment receive €2,000 off per room and have their notary fees covered.</p><p>The sales team will confirm the discount amount, the notary fees covered and offer availability in writing before the reservation contract is signed. Sending an enquiry does not reserve an apartment or guarantee access to the offer.</p></section>
+      <section id="donnees" class="legal-disclaimer"><h2>Your personal data</h2><p>Your contact details and enquiry are used to respond to your request and arrange a discussion with the sales team. Data are retained for up to 18 months after your last interaction. SMS marketing consent is optional. To exercise your rights of access, correction or deletion, email contact@ozimmo.fr.</p></section>
       <div class="legal-disclaimer" role="note">
         <strong>{s.legal_disclaimer.h}</strong>
         <p>{s.legal_disclaimer.body}</p>
@@ -27,7 +29,7 @@ const s = t(lang);
     border-inline-start: 4px solid var(--accent);
     padding: var(--s-5);
     border-radius: 4px;
-    max-width: 60ch;
+    max-width: 60ch; margin-bottom: var(--s-5);
     margin-inline: auto;
   }
   .legal-disclaimer strong {
