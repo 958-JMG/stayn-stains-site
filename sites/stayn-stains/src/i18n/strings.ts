@@ -170,6 +170,13 @@ export interface Strings {
     email_h: string;
   };
   form: {
+    project_question: string;
+    project_options: string[];
+    step_project: string;
+    step_contact: string;
+    contact_question: string;
+    back: string;
+    reassurance: string;
     field_prenom: string;
     field_nom: string;
     field_email: string;
@@ -293,7 +300,7 @@ const fr: Strings = {
     cta: "Vérifier les disponibilités",
     note: "La demande d’information est sans engagement et ne constitue pas une réservation.",
     steps_title: "Votre projet commence ici",
-    step1: "Choisissez le type d’appartement qui vous intéresse.",
+    step1: "Parlez-nous de votre projet.",
     step2: "Recevez les plans, les prix et les conditions de l’offre.",
     step3: "Échangez avec un conseiller pour préparer votre réservation.",
     fine_prefix: "Voir les ",
@@ -405,12 +412,19 @@ const fr: Strings = {
     eyebrow: "Plans · Prix · Offre d’automne",
     h2: "Recevez les plans et votre offre personnalisée.",
     lead_strong: "Sans engagement.",
-    lead_body: "Indiquez-nous l’appartement qui vous intéresse. Un conseiller vous présente les disponibilités et les conditions de l’offre. ",
+    lead_body: "Parlons de votre projet. Un conseiller vous présente les plans, les disponibilités et l’offre. ",
     address_h: "Espace de vente",
     tel_h: "Téléphone",
     email_h: "Email",
   },
   form: {
+    project_question: "Quel est votre projet ?",
+    project_options: ["Mon premier achat", "Changer de résidence principale", "Investir pour louer", "Je me renseigne"],
+    step_project: "1 / 2 · Votre projet",
+    step_contact: "2 / 2 · Vos coordonnées",
+    contact_question: "Comment vous recontacter ?",
+    back: "Modifier mon projet",
+    reassurance: "Sans engagement. Un conseiller vous accompagne.",
     field_prenom: "Prénom",
     field_nom: "Nom",
     field_email: "Email",
@@ -425,9 +439,9 @@ const fr: Strings = {
     tel_help: "Pour qu'un conseiller vous recontacte rapidement.",
     consent_sms:
       "J'accepte de recevoir des communications par SMS de la part de CD LINK Promotion concernant le programme Stay'n.",
-    consent_rgpd_prefix: "J'ai pris connaissance des ",
-    consent_rgpd_link: "mentions légales et de la politique de confidentialité",
-    consent_rgpd_suffix: " et j'accepte le traitement de mes données pour répondre à ma demande.",
+    consent_rgpd_prefix: "J’accepte d’être recontacté au sujet de Stay’n. ",
+    consent_rgpd_link: "Politique de confidentialité",
+    consent_rgpd_suffix: ".",
     submit: "Recevoir les plans et l’offre",
     submitting: "Envoi en cours…",
     rgpd_note_prefix:
@@ -649,12 +663,19 @@ const en: Strings = {
     eyebrow: "Floor plans · Prices · Autumn offer",
     h2: "Get floor plans and your personalised offer.",
     lead_strong: "No commitment.",
-    lead_body: "Tell us which apartment interests you. An adviser will explain availability and the offer terms. ",
+    lead_body: "Tell us about your project. An adviser will share floor plans, availability and the offer. ",
     address_h: "Sales office",
     tel_h: "Phone",
     email_h: "Email",
   },
   form: {
+    project_question: "What is your project?",
+    project_options: ["Buying my first home", "Moving to a new main home", "Buying to let", "Just exploring"],
+    step_project: "1 / 2 · Your project",
+    step_contact: "2 / 2 · Your contact details",
+    contact_question: "How can we contact you?",
+    back: "Change my project",
+    reassurance: "No commitment. An adviser will help you.",
     field_prenom: "First name",
     field_nom: "Last name",
     field_email: "Email",
@@ -669,9 +690,9 @@ const en: Strings = {
     tel_help: "So a consultant can call you back quickly.",
     consent_sms:
       "I agree to receive SMS communications from CD LINK Promotion regarding the Stay'n project.",
-    consent_rgpd_prefix: "I have read the ",
-    consent_rgpd_link: "legal notice and privacy policy",
-    consent_rgpd_suffix: " and I consent to my data being processed to respond to my request.",
+    consent_rgpd_prefix: "I agree to be contacted about Stay’n. ",
+    consent_rgpd_link: "Privacy policy",
+    consent_rgpd_suffix: ".",
     submit: "Get floor plans and the offer",
     submitting: "Sending…",
     rgpd_note_prefix:
@@ -895,12 +916,19 @@ const ar: Strings = {
     eyebrow: "مخططات · أسعار · عرض الخريف",
     h2: "احصلوا على المخططات والعرض الخاص بكم.",
     lead_strong: "دون أي التزام.",
-    lead_body: "أخبرونا بالشقة التي تهمّكم. سيشرح لكم مستشار التوافر وشروط العرض. ",
+    lead_body: "حدّثونا عن مشروعكم. سيعرض عليكم مستشار المخططات والتوافر والعرض. ",
     address_h: "مكتب المبيعات",
     tel_h: "الهاتف",
     email_h: "البريد الإلكتروني",
   },
   form: {
+    project_question: "ما هو مشروعكم؟",
+    project_options: ["شراء مسكني الأول", "الانتقال إلى مسكن رئيسي جديد", "الشراء بهدف التأجير", "أستكشف الخيارات"],
+    step_project: "١ / ٢ · مشروعكم",
+    step_contact: "٢ / ٢ · بيانات التواصل",
+    contact_question: "كيف يمكننا التواصل معكم؟",
+    back: "تعديل مشروعي",
+    reassurance: "دون التزام. مستشار يرافقكم في مشروعكم.",
     field_prenom: "الاسم الشخصي",
     field_nom: "اسم العائلة",
     field_email: "البريد الإلكتروني",
@@ -915,9 +943,9 @@ const ar: Strings = {
     tel_help: "ليتواصل معكم مستشار بسرعة.",
     consent_sms:
       "أوافق على تلقّي رسائل SMS من CD LINK Promotion بشأن مشروع Stay'n.",
-    consent_rgpd_prefix: "اطّلعتُ على ",
-    consent_rgpd_link: "الإشعار القانوني وسياسة الخصوصيّة",
-    consent_rgpd_suffix: " وأوافق على معالجة بياناتي للردّ على طلبي.",
+    consent_rgpd_prefix: "أوافق على التواصل معي بخصوص Stay’n. ",
+    consent_rgpd_link: "سياسة الخصوصية",
+    consent_rgpd_suffix: ".",
     submit: "اطلبوا المخططات والعرض",
     submitting: "جاري الإرسال…",
     rgpd_note_prefix:

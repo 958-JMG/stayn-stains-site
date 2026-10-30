@@ -58,7 +58,11 @@ async function handleLead(request: Request, env: Env): Promise<Response> {
 
   // Validation minimale côté serveur — le worker reste léger,
   // n8n garde la main sur la logique métier.
-  const required = ['nom', 'email', 'telephone', 'consent_rgpd'];
+  const required = ['email', 'telephone', 'consent_rgpd'];
+  // The short form collects a first name; keep accepting earlier clients with a surname.
+  if (![payload.prenom, payload.nom].some(value => typeof value === 'string' && value.trim())) {
+    return json({ error: 'missing_field', field: 'prenom' }, 400);
+  }
   for (const field of required) {
     if (payload[field] === undefined || payload[field] === '' || payload[field] === false) {
       return json({ error: 'missing_field', field }, 400);

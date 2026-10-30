@@ -30,3 +30,16 @@ test('apex GET preserves route and campaign parameters',async()=>{
   const r=await worker.fetch(new Request('https://stayn-stains.fr/en/?utm_campaign=stayn_automne_2026'),env,{});
   assert.equal(r.status,301);assert.equal(r.headers.get('location'),'https://www.stayn-stains.fr/en/?utm_campaign=stayn_automne_2026');
 });
+test('short form sends first name and project without surname or SMS opt-in', async () => {
+  const original=globalThis.fetch; let forwarded;
+  globalThis.fetch=async (_,options)=>{forwarded=JSON.parse(options.body);return new Response('{"ok":true}');};
+  try {
+    const short={...form,nom:'',projet:'Premier achat',type_logement:''};
+    assert.equal((await worker.fetch(post(short),env,{})).status,200);
+    assert.equal(forwarded.prenom,'Camille');
+    assert.equal(forwarded.nom,'');
+    assert.equal(forwarded.projet,'Premier achat');
+    assert.equal(forwarded.consent_sms,false);
+    assert.equal((await worker.fetch(post({...short,prenom:' '}),env,{})).status,400);
+  } finally {globalThis.fetch=original;}
+});

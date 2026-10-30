@@ -5,6 +5,7 @@ import { t } from '../i18n/strings';
 interface Props { lang?: Locale; }
 const { lang = DEFAULT_LOCALE } = Astro.props;
 const s = t(lang);
+const projectValues = ["Premier achat", "Changement de résidence principale", "Investissement locatif", "Se renseigne"];
 const legalHref = lang === DEFAULT_LOCALE ? '/mentions-legales#donnees' : `/${lang}/mentions-legales#donnees`;
 const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
 ---
@@ -14,9 +15,10 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
   class="lead-form"
   novalidate
   data-lang={lang}
+  data-step-project={s.form.step_project}
+  data-step-contact={s.form.step_contact}
   data-merci-href={merciHref}
   data-err-prenom={s.form.err_prenom}
-  data-err-nom={s.form.err_nom}
   data-err-email={s.form.err_email}
   data-err-tel={s.form.err_tel}
   data-err-consent={s.form.err_consent}
@@ -27,69 +29,52 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
   data-msg-submit={s.form.submit}
 >
   <h3 class="form-heading">{s.form.submit}</h3>
-  <div class="form-grid">
-    <div class="form-field">
-      <label for="lf-prenom">{s.form.field_prenom} <span class="req" aria-hidden="true">*</span></label>
-      <input id="lf-prenom" name="prenom" type="text" autocomplete="given-name" required minlength="2" />
-      <span class="err">{s.form.err_prenom}</span>
+  <p class="form-step" data-step-label aria-live="polite">{s.form.step_project}</p>
+  <div data-project-step>
+    <h4 class="step-question">{s.form.project_question}</h4>
+    <div class="project-choices">
+      {s.form.project_options.map((label, index) => (
+        <button type="button" class="project-choice" data-project={projectValues[index]}>
+          <span>{label}</span><span aria-hidden="true">→</span>
+        </button>
+      ))}
     </div>
-    <div class="form-field">
-      <label for="lf-nom">{s.form.field_nom} <span class="req" aria-hidden="true">*</span></label>
-      <input id="lf-nom" name="nom" type="text" autocomplete="family-name" required minlength="2" />
-      <span class="err">{s.form.err_nom}</span>
-    </div>
-    <div class="form-field full">
-      <label for="lf-email">{s.form.field_email} <span class="req" aria-hidden="true">*</span></label>
-      <input id="lf-email" name="email" type="email" autocomplete="email" required inputmode="email" placeholder={s.form.placeholder_email} />
-      <span class="err">{s.form.err_email}</span>
-    </div>
-    <div class="form-field full">
-      <label for="lf-tel">{s.form.field_tel} <span class="req" aria-hidden="true">*</span></label>
-      <input id="lf-tel" name="telephone" type="tel" autocomplete="tel" required inputmode="tel" placeholder={s.form.placeholder_tel} pattern="[+0-9 .()\-]{10,}" />
-      <span class="help">{s.form.tel_help}</span>
-      <span class="err">{s.form.err_tel}</span>
-    </div>
-    <div class="form-field full">
-      <label for="lf-type">{s.form.field_type}</label>
-      <select id="lf-type" name="type_logement">
-        <option value="">{s.form.type_indiff}</option>
-        <option value="T2">{s.apparts.type_t2}</option>
-        <option value="T3">{s.apparts.type_t3}</option>
-        <option value="T4">{s.apparts.type_t4}</option>
-        <option value="T5">{s.apparts.type_t5}</option>
-      </select>
-    </div>
-    <div class="form-field full">
-      <label for="lf-projet">{s.form.field_projet} <span class="muted">{s.form.optional}</span></label>
-      <textarea id="lf-projet" name="projet" rows="3" placeholder={s.form.placeholder_projet}></textarea>
-    </div>
+    <p class="form-reassurance">{s.form.reassurance}</p>
   </div>
-
-  <div class="form-consents">
-    <label class="form-checkbox">
-      <input type="checkbox" name="consent_sms" />
-      <span>
-        {s.form.consent_sms} {s.form.optional}
-      </span>
-    </label>
-    <label class="form-checkbox">
-      <input type="checkbox" name="consent_rgpd" required />
-      <span>
-        {s.form.consent_rgpd_prefix}<a href={legalHref}>{s.form.consent_rgpd_link}</a>{s.form.consent_rgpd_suffix}
-        <span class="req" aria-hidden="true">*</span>
-      </span>
-    </label>
+  <div data-contact-step hidden>
+    <button type="button" class="form-back" data-back>{s.form.back}</button>
+    <h4 class="step-question">{s.form.contact_question}</h4>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label for="lf-prenom">{s.form.field_prenom} <span class="req" aria-hidden="true">*</span></label>
+        <input id="lf-prenom" name="prenom" type="text" autocomplete="given-name" required />
+        <span class="err">{s.form.err_prenom}</span>
+      </div>
+      <div class="form-field full">
+        <label for="lf-email">{s.form.field_email} <span class="req" aria-hidden="true">*</span></label>
+        <input id="lf-email" name="email" type="email" autocomplete="email" required inputmode="email" placeholder={s.form.placeholder_email} />
+        <span class="err">{s.form.err_email}</span>
+      </div>
+      <div class="form-field full">
+        <label for="lf-tel">{s.form.field_tel} <span class="req" aria-hidden="true">*</span></label>
+        <input id="lf-tel" name="telephone" type="tel" autocomplete="tel" required inputmode="tel" placeholder={s.form.placeholder_tel} pattern="[+0-9 .()\-]{10,}" />
+        <span class="help">{s.form.tel_help}</span>
+        <span class="err">{s.form.err_tel}</span>
+      </div>
+    </div>
+    <div class="form-consents">
+      <label class="form-checkbox">
+        <input type="checkbox" name="consent_rgpd" required />
+        <span>{s.form.consent_rgpd_prefix}<a href={legalHref}>{s.form.consent_rgpd_link}</a>{s.form.consent_rgpd_suffix}<span class="req" aria-hidden="true">*</span></span>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary btn--lg" data-submit><span data-label>{s.form.submit}</span><span class="arrow" aria-hidden="true">→</span></button>
+    </div>
+    <p class="form-reassurance">{s.form.reassurance}</p>
   </div>
-
-  <div class="form-actions">
-    <button type="submit" class="btn btn--primary btn--lg" data-submit>
-      <span data-label>{s.form.submit}</span>
-      <span class="arrow" aria-hidden="true">→</span>
-    </button>
-    <p class="form-rgpd-note">
-      {s.form.rgpd_note_prefix}<a href="mailto:contact@ozimmo.fr">{s.form.rgpd_note_email}</a>{s.form.rgpd_note_suffix}
-    </p>
-  </div>
+  <input type="hidden" name="projet" value="" />
+  <input type="hidden" id="lf-type" name="type_logement" value="" />
 
   <div class="form-status" role="status" aria-live="polite" data-status></div>
 
@@ -99,7 +84,16 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
 </form>
 
 <style>
-  .form-heading { font-size: var(--step-3); margin-bottom: var(--s-4); }
+  .form-heading { font-size: var(--step-2); margin-bottom: var(--s-2); }
+  [hidden] { display: none !important; }
+  .form-step { color: var(--ink-3); font-size: var(--step--1); margin-bottom: var(--s-4); }
+  .step-question { font-size: var(--step-1); margin-bottom: var(--s-3); }
+  .project-choices { display: grid; gap: 10px; }
+  .project-choice { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 18px; text-align: start; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+  .project-choice:hover, .project-choice:focus-visible { border-color: var(--signal); background: #fff; outline: 2px solid var(--signal); outline-offset: 2px; }
+  .form-back { color: var(--signal); font: inherit; font-size: var(--step--1); background: none; border: 0; padding: 0; margin-bottom: var(--s-3); text-decoration: underline; cursor: pointer; }
+  .form-reassurance { color: var(--ink-3); font-size: var(--step--1); margin-top: var(--s-3); }
+  :global(html[dir="rtl"]) .project-choice > span:last-child { transform: scaleX(-1); }
   .lead-form {
     scroll-margin-top: calc(var(--header-h) + 20px);
     background: var(--bg-2);
@@ -164,6 +158,26 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
     if (!form || form.dataset.bound === 'true') return;
     form.dataset.bound = 'true';
 
+    const projectStep = form.querySelector<HTMLElement>('[data-project-step]')!;
+    const contactStep = form.querySelector<HTMLElement>('[data-contact-step]')!;
+    const stepLabel = form.querySelector<HTMLElement>('[data-step-label]')!;
+    const projectInput = form.querySelector<HTMLInputElement>('input[name="projet"]')!;
+    form.querySelectorAll<HTMLButtonElement>('[data-project]').forEach((choice) => {
+      choice.addEventListener('click', () => {
+        projectInput.value = choice.dataset.project || '';
+        projectStep.hidden = true;
+        contactStep.hidden = false;
+        stepLabel.textContent = form.dataset.stepContact || '';
+        form.querySelector<HTMLInputElement>('#lf-prenom')?.focus({ preventScroll: true });
+      });
+    });
+    form.querySelector('[data-back]')?.addEventListener('click', () => {
+      contactStep.hidden = true;
+      projectStep.hidden = false;
+      stepLabel.textContent = form.dataset.stepProject || '';
+      form.querySelector<HTMLButtonElement>('[data-project]')?.focus({ preventScroll: true });
+    });
+
     const status = form.querySelector('[data-status]') as HTMLElement | null;
     const btn = form.querySelector('[data-submit]') as HTMLButtonElement | null;
     const label = form.querySelector('[data-label]') as HTMLElement | null;
@@ -210,13 +224,13 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       link.addEventListener('click', (event) => {
         event.preventDefault();
         const type = link.dataset.leadType;
-        const select = form.querySelector<HTMLSelectElement>('#lf-type');
+        const select = form.querySelector<HTMLInputElement>('#lf-type');
         if (type && select) select.value = type;
         if (typeof (window as any).plausible === 'function') {
           (window as any).plausible('lead_cta_click', { props: { placement: link.dataset.leadCta || 'contact', lang: form.dataset.lang } });
         }
         form.scrollIntoView({ behavior: 'instant', block: 'start' });
-        form.querySelector<HTMLInputElement>('#lf-prenom')?.focus({ preventScroll: true });
+        (contactStep.hidden ? form.querySelector<HTMLElement>('[data-project]') : form.querySelector<HTMLElement>('#lf-prenom'))?.focus({ preventScroll: true });
       });
     });
 
@@ -233,7 +247,7 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
 
       const payload: Record<string, unknown> = {
         prenom: (fd.get('prenom') as string)?.trim(),
-        nom: (fd.get('nom') as string)?.trim(),
+        nom: '',
         email: (fd.get('email') as string)?.trim(),
         telephone: (fd.get('telephone') as string)?.trim(),
         type_logement: (fd.get('type_logement') as string) || '',
@@ -251,7 +265,6 @@ const merciHref = lang === DEFAULT_LOCALE ? '/merci' : `/${lang}/merci`;
       fields.forEach((f) => f.classList.remove('is-error'));
 
       if (!payload.prenom) { setError(form.querySelector('#lf-prenom')?.closest('.form-field') || null, true); valid = false; }
-      if (!payload.nom) { setError(form.querySelector('#lf-nom')?.closest('.form-field') || null, true); valid = false; }
       const emailOk = typeof payload.email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email);
       if (!emailOk) { setError(form.querySelector('#lf-email')?.closest('.form-field') || null, true); valid = false; }
       const telOk = typeof payload.telephone === 'string' && payload.telephone.replace(/[^\d+]/g, '').length >= 9;
